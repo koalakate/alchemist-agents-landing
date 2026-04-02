@@ -1,0 +1,864 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Alchemist Agents — Approach B: The Showcase</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --green: #00FF88;
+    --green-dim: #00cc6a;
+    --green-glow: rgba(0, 255, 136, 0.15);
+    --bg-primary: #000306;
+    --bg-card: #0a0f14;
+    --bg-card-hover: #0f1820;
+    --border: #1a2a35;
+    --text-primary: #f0f4f8;
+    --text-secondary: #8a9bb0;
+    --text-dim: #4a5a6a;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    font-family: 'Space Grotesk', sans-serif;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    padding: 1.25rem 3rem;
+    display: flex; justify-content: space-between; align-items: center;
+    background: rgba(0,3,6,0.85);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(26,42,53,0.5);
+  }
+  .logo {
+    font-weight: 700; font-size: 1.3rem; letter-spacing: -0.02em;
+  }
+  .logo span { color: var(--green); }
+  nav a {
+    color: var(--text-secondary); text-decoration: none; font-size: 0.9rem;
+    transition: color 0.2s;
+  }
+  nav a:hover { color: var(--green); }
+  .nav-links { display: flex; gap: 2rem; align-items: center; }
+  .btn-nav {
+    padding: 0.5rem 1.25rem;
+    border: 1px solid var(--green);
+    color: var(--green);
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    transition: all 0.2s;
+    text-decoration: none;
+  }
+  .btn-nav:hover { background: var(--green); color: var(--bg-primary); }
+
+  /* === HERO — CINEMATIC FULL-BLEED === */
+  .hero {
+    min-height: 100vh;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    padding: 7rem 2rem 3rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  /* Massive green orb behind video */
+  .hero::before {
+    content: '';
+    position: absolute; top: -20%; left: 50%; transform: translateX(-50%);
+    width: 1200px; height: 1200px;
+    background: radial-gradient(circle, rgba(0,255,136,0.08) 0%, transparent 55%);
+    pointer-events: none;
+  }
+  /* Subtle grid overlay */
+  .hero::after {
+    content: '';
+    position: absolute; inset: 0;
+    background-image:
+      linear-gradient(rgba(26,42,53,0.15) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(26,42,53,0.15) 1px, transparent 1px);
+    background-size: 60px 60px;
+    pointer-events: none;
+    mask-image: radial-gradient(circle at 50% 40%, black 30%, transparent 70%);
+  }
+
+  .hero-label {
+    display: inline-flex; align-items: center; gap: 0.75rem;
+    font-size: 0.85rem;
+    color: var(--green);
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 1.5rem;
+    position: relative; z-index: 1;
+  }
+  .hero-label::before {
+    content: '';
+    width: 40px; height: 1px;
+    background: var(--green);
+  }
+  .hero h1 {
+    font-size: clamp(3rem, 7vw, 5.5rem);
+    font-weight: 700;
+    line-height: 1.05;
+    letter-spacing: -0.04em;
+    max-width: 900px;
+    margin-bottom: 1.5rem;
+    position: relative; z-index: 1;
+  }
+  .hero h1 .accent { color: var(--green); }
+  .hero-sub {
+    font-size: 1.15rem;
+    color: var(--text-secondary);
+    max-width: 520px;
+    line-height: 1.6;
+    margin-bottom: 2rem;
+    position: relative; z-index: 1;
+  }
+  .hero-cta-row {
+    display: flex; gap: 1rem; margin-bottom: 4rem;
+    position: relative; z-index: 1;
+  }
+
+  /* Video as showcase centerpiece */
+  .video-showcase {
+    position: relative; z-index: 1;
+    width: 100%;
+    max-width: 960px;
+  }
+  .video-frame {
+    position: relative;
+    border-radius: 20px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    box-shadow:
+      0 60px 120px rgba(0,0,0,0.6),
+      0 0 0 1px rgba(0,255,136,0.05),
+      0 0 80px rgba(0,255,136,0.04);
+  }
+  .video-frame::before {
+    content: ''; display: block; padding-top: 56.25%;
+  }
+  .video-frame iframe {
+    position: absolute; top: 0; left: 0;
+    width: 100%; height: 100%; border: none;
+  }
+  /* Reflection effect under video */
+  .video-reflection {
+    height: 120px;
+    background: linear-gradient(to bottom, rgba(0,255,136,0.03), transparent);
+    border-radius: 0 0 20px 20px;
+    filter: blur(20px);
+    margin-top: -2px;
+  }
+
+  /* === FEATURES — HORIZONTAL SCROLL-ISH CARDS === */
+  .features {
+    padding: 8rem 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  .features-header {
+    text-align: center;
+    margin-bottom: 4rem;
+  }
+  .features-header h2 {
+    font-size: clamp(2rem, 4vw, 3rem);
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    margin-bottom: 0.5rem;
+  }
+  .features-header p {
+    color: var(--text-secondary);
+    font-size: 1.05rem;
+  }
+  .feature-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.25rem;
+  }
+  .feature-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 2rem 1.5rem;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s;
+  }
+  .feature-card:hover {
+    border-color: var(--green-dim);
+    transform: translateY(-4px);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+  }
+  .feature-card .f-number {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--green);
+    margin-bottom: 1.5rem;
+    opacity: 0.6;
+  }
+  .feature-card .f-icon {
+    font-size: 2rem;
+    margin-bottom: 1.25rem;
+  }
+  .feature-card h3 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+  }
+  .feature-card p {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    line-height: 1.5;
+  }
+
+  /* === ANIMATED DEMO — FULL WIDTH === */
+  .demo-section {
+    padding: 6rem 0;
+    background: linear-gradient(180deg, transparent, rgba(0,255,136,0.02), transparent);
+    position: relative;
+  }
+  .demo-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 2rem;
+  }
+  .demo-header {
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+  .demo-header h2 {
+    font-size: clamp(1.8rem, 3.5vw, 2.8rem);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin-bottom: 0.5rem;
+  }
+  .demo-header p { color: var(--text-secondary); }
+
+  .demo-stage {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    overflow: hidden;
+  }
+  .demo-toolbar {
+    display: flex; align-items: center; gap: 0.5rem;
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .demo-dot {
+    width: 10px; height: 10px; border-radius: 50%;
+    background: var(--border);
+  }
+  .demo-dot:nth-child(1) { background: #ff5f57; }
+  .demo-dot:nth-child(2) { background: #febc2e; }
+  .demo-dot:nth-child(3) { background: #28c840; }
+  .demo-toolbar-title {
+    margin-left: 1rem;
+    font-size: 0.8rem;
+    color: var(--text-dim);
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .demo-split {
+    display: grid;
+    grid-template-columns: 1fr 60px 1fr;
+  }
+  .demo-pane {
+    padding: 2rem;
+  }
+  .demo-pane-label {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: var(--text-dim);
+    margin-bottom: 1.25rem;
+    font-weight: 600;
+  }
+  .demo-pane-label .lang { color: var(--green); }
+  .demo-code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.82rem;
+    line-height: 1.8;
+  }
+  .demo-code .kw { color: #ff79c6; }
+  .demo-code .str { color: #f1fa8c; }
+  .demo-code .fn { color: #8be9fd; }
+  .demo-code .cm { color: var(--text-dim); }
+  .demo-code .var { color: #bd93f9; }
+  .demo-code .op { color: var(--green); }
+
+  .demo-divider {
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    border-left: 1px solid var(--border);
+    border-right: 1px solid var(--border);
+    position: relative;
+  }
+  .demo-divider-arrow {
+    width: 36px; height: 36px;
+    border: 1px solid var(--green);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--green);
+    font-size: 1rem;
+    background: var(--bg-primary);
+    z-index: 1;
+  }
+  .demo-divider::before {
+    content: '';
+    position: absolute; top: 0; bottom: 0;
+    width: 1px;
+    background: linear-gradient(to bottom, transparent, var(--green), transparent);
+    opacity: 0.3;
+  }
+
+  .typing-cursor {
+    display: inline-block;
+    width: 2px; height: 1em;
+    background: var(--green);
+    margin-left: 2px;
+    animation: blink 0.8s step-end infinite;
+    vertical-align: text-bottom;
+  }
+  @keyframes blink { 50% { opacity: 0; } }
+
+  /* === MCP vs SKILL — TABS === */
+  .integration {
+    padding: 8rem 2rem;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+  .integration-header {
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+  .integration-header h2 {
+    font-size: clamp(1.8rem, 3.5vw, 2.8rem);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin-bottom: 0.5rem;
+  }
+  .integration-header p { color: var(--text-secondary); }
+
+  .tab-row {
+    display: flex;
+    justify-content: center;
+    gap: 0;
+    margin-bottom: 2rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .tab-btn {
+    padding: 1rem 2.5rem;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-dim);
+    background: none;
+    border: none;
+    border-bottom: 2px solid transparent;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .tab-btn.active {
+    color: var(--green);
+    border-bottom-color: var(--green);
+  }
+  .tab-btn:hover { color: var(--text-secondary); }
+
+  .tab-content {
+    display: none;
+  }
+  .tab-content.active { display: block; }
+
+  .tab-panel {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 3rem;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3rem;
+  }
+  .tab-panel h3 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+  }
+  .tab-panel .mono {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.85rem;
+    color: var(--green);
+    margin-bottom: 1.5rem;
+  }
+  .tab-panel ul {
+    list-style: none;
+    display: flex; flex-direction: column; gap: 0.75rem;
+  }
+  .tab-panel li {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    line-height: 1.5;
+    padding-left: 1.25rem;
+    position: relative;
+  }
+  .tab-panel li::before {
+    content: '';
+    position: absolute; left: 0; top: 0.55em;
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--green);
+  }
+  .tab-panel .best-for {
+    margin-top: 1.5rem;
+    padding: 1rem;
+    background: var(--bg-primary);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 0.85rem;
+    color: var(--text-dim);
+  }
+  .tab-panel .best-for strong { color: var(--text-secondary); }
+
+  .tab-visual {
+    display: flex; align-items: center; justify-content: center;
+  }
+  .tab-diagram {
+    width: 100%;
+    padding: 2rem;
+    border: 1px dashed var(--border);
+    border-radius: 12px;
+    text-align: center;
+    color: var(--text-dim);
+    font-size: 0.85rem;
+    line-height: 2;
+  }
+  .tab-diagram .node {
+    display: inline-block;
+    padding: 0.4rem 1rem;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    margin: 0.25rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+  }
+  .tab-diagram .node.active {
+    border-color: var(--green);
+    color: var(--green);
+  }
+
+  /* === AGENTS === */
+  .agents {
+    padding: 4rem 2rem 6rem;
+    max-width: 1100px;
+    margin: 0 auto;
+    text-align: center;
+  }
+  .agents h2 {
+    font-size: clamp(1.8rem, 3vw, 2.5rem);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin-bottom: 0.5rem;
+  }
+  .agents > p { color: var(--text-secondary); margin-bottom: 3rem; }
+  .agents-row {
+    display: flex;
+    justify-content: center;
+    gap: 2.5rem;
+    flex-wrap: wrap;
+  }
+  .agent-item {
+    display: flex; flex-direction: column;
+    align-items: center; gap: 0.75rem;
+    transition: transform 0.2s;
+  }
+  .agent-item:hover { transform: translateY(-4px); }
+  .agent-icon {
+    width: 72px; height: 72px;
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--bg-card);
+    font-size: 1.6rem;
+    transition: border-color 0.3s;
+  }
+  .agent-item:hover .agent-icon { border-color: var(--green-dim); }
+  .agent-item span {
+    font-size: 0.8rem;
+    color: var(--text-dim);
+    font-weight: 500;
+  }
+
+  /* === CTA === */
+  .cta {
+    padding: 10rem 2rem 8rem;
+    text-align: center;
+    position: relative;
+  }
+  .cta::before {
+    content: '';
+    position: absolute; bottom: 10%; left: 50%; transform: translateX(-50%);
+    width: 800px; height: 500px;
+    background: radial-gradient(ellipse, rgba(0,255,136,0.06) 0%, transparent 60%);
+    pointer-events: none;
+  }
+  .cta h2 {
+    font-size: clamp(2.5rem, 5vw, 4rem);
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    line-height: 1.1;
+    margin-bottom: 1rem;
+    position: relative; z-index: 1;
+  }
+  .cta h2 .accent { color: var(--green); }
+  .cta p {
+    color: var(--text-secondary);
+    font-size: 1.1rem;
+    margin-bottom: 2.5rem;
+    max-width: 500px;
+    margin-left: auto; margin-right: auto;
+    position: relative; z-index: 1;
+  }
+  .cta-buttons {
+    display: flex; gap: 1rem;
+    justify-content: center;
+    position: relative; z-index: 1;
+  }
+
+  /* SHARED BUTTONS */
+  .btn-primary {
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    padding: 1rem 2.5rem;
+    background: var(--green);
+    color: var(--bg-primary);
+    font-weight: 600;
+    font-size: 1rem;
+    border: none; border-radius: 8px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.2s;
+    font-family: 'Space Grotesk', sans-serif;
+  }
+  .btn-primary:hover {
+    box-shadow: 0 0 30px rgba(0,255,136,0.3);
+    transform: translateY(-1px);
+  }
+  .btn-outline {
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    padding: 1rem 2.5rem;
+    background: transparent;
+    color: var(--green);
+    font-weight: 600;
+    font-size: 1rem;
+    border: 1px solid var(--green);
+    border-radius: 8px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.2s;
+    font-family: 'Space Grotesk', sans-serif;
+  }
+  .btn-outline:hover { background: rgba(0,255,136,0.08); }
+
+  /* FOOTER */
+  footer {
+    padding: 2rem 3rem;
+    border-top: 1px solid var(--border);
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 0.8rem; color: var(--text-dim);
+    max-width: 1100px; margin: 0 auto;
+  }
+
+  /* RESPONSIVE */
+  @media (max-width: 900px) {
+    .feature-row { grid-template-columns: 1fr 1fr; }
+    .demo-split { grid-template-columns: 1fr; }
+    .demo-divider {
+      flex-direction: row; padding: 1rem;
+      border-left: none; border-right: none;
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+    .demo-divider::before { display: none; }
+    .tab-panel { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 600px) {
+    .feature-row { grid-template-columns: 1fr; }
+    nav { padding: 1rem 1.5rem; }
+    .nav-links { gap: 1rem; }
+  }
+
+  .section-label {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: var(--green);
+    font-weight: 600;
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="logo"><span>/</span>alchemist</div>
+  <div class="nav-links">
+    <a href="#">Product</a>
+    <a href="#">Docs</a>
+    <a href="#">Pricing</a>
+    <a href="#" class="btn-nav">Get in Touch</a>
+  </div>
+</nav>
+
+<!-- HERO — CINEMATIC -->
+<section class="hero">
+  <div class="hero-label">
+    <span></span> Introducing Agent Integrations
+  </div>
+  <h1>Your agents.<br>Our <span class="accent">alchemy.</span></h1>
+  <p class="hero-sub">
+    Connect any coding agent to Alchemist and convert SAS to PySpark, Python, and more — in seconds.
+  </p>
+  <div class="hero-cta-row">
+    <a href="#" class="btn-primary">Book a Demo &rarr;</a>
+    <a href="#" class="btn-outline">See How It Works</a>
+  </div>
+
+  <div class="video-showcase">
+    <div class="video-frame">
+      <iframe
+        src="https://www.youtube.com/embed/IBZDeOhHPc8?rel=0&modestbranding=1"
+        title="Alchemist Agents Demo"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+        allowfullscreen>
+      </iframe>
+    </div>
+    <div class="video-reflection"></div>
+  </div>
+</section>
+
+<!-- FEATURES — 4 CARDS -->
+<section class="features">
+  <div class="features-header">
+    <p class="section-label" style="margin-bottom: 0.75rem;">Why Alchemist Agents</p>
+    <h2>Migration, supercharged</h2>
+    <p>Everything your team needs to move off SAS — at the speed of conversation.</p>
+  </div>
+  <div class="feature-row">
+    <div class="feature-card">
+      <div class="f-number">01</div>
+      <div class="f-icon">&#9889;</div>
+      <h3>Warp Speed</h3>
+      <p>Convert entire SAS programs in seconds, not weeks. Your agent handles the conversation — Alchemist handles the translation.</p>
+    </div>
+    <div class="feature-card">
+      <div class="f-number">02</div>
+      <div class="f-icon">&#127919;</div>
+      <h3>Consistent Output</h3>
+      <p>Every conversion uses the same engine. No developer-to-developer variation, no logic drift across thousands of programs.</p>
+    </div>
+    <div class="feature-card">
+      <div class="f-number">03</div>
+      <div class="f-icon">&#129309;</div>
+      <h3>Agent-Native</h3>
+      <p>Built for the tools your team already uses. Databricks Genie, Snowflake Cortex, Claude Code — plug in and go.</p>
+    </div>
+    <div class="feature-card">
+      <div class="f-number">04</div>
+      <div class="f-icon">&#128272;</div>
+      <h3>Deploy Anywhere</h3>
+      <p>Use Alchemist cloud or deploy via Docker in your air-gapped environment. Your data, your rules.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ANIMATED CODE DEMO -->
+<section class="demo-section">
+  <div class="demo-inner">
+    <div class="demo-header">
+      <p class="section-label" style="margin-bottom: 0.75rem;">Live Conversion</p>
+      <h2>SAS in. PySpark out.</h2>
+      <p>Watch Alchemist convert your code in real time.</p>
+    </div>
+
+    <div class="demo-stage">
+      <div class="demo-toolbar">
+        <div class="demo-dot"></div>
+        <div class="demo-dot"></div>
+        <div class="demo-dot"></div>
+        <span class="demo-toolbar-title">alchemist-conversion &mdash; api.getalchemist.io</span>
+      </div>
+      <div class="demo-split">
+        <div class="demo-pane">
+          <div class="demo-pane-label"><span class="lang">SAS</span> &mdash; input</div>
+          <div class="demo-code">
+            <span class="kw">data</span> work.high_power_cars;<br>
+            &nbsp;&nbsp;<span class="kw">set</span> sashelp.cars;<br>
+            &nbsp;&nbsp;<span class="kw">where</span> horsepower <span class="op">></span> <span class="str">300</span>;<br>
+            &nbsp;&nbsp;tax_category <span class="op">=</span> <span class="str">'Premium'</span>;<br>
+            &nbsp;&nbsp;adjusted_msrp <span class="op">=</span> msrp <span class="op">*</span> <span class="str">1.05</span>;<br>
+            <span class="kw">run</span>;
+          </div>
+        </div>
+
+        <div class="demo-divider">
+          <div class="demo-divider-arrow">&#8594;</div>
+        </div>
+
+        <div class="demo-pane">
+          <div class="demo-pane-label"><span class="lang">PySpark</span> &mdash; output</div>
+          <div class="demo-code">
+            <span class="cm"># Converted by Alchemist</span><br>
+            <span class="kw">from</span> pyspark.sql <span class="kw">import</span> functions <span class="kw">as</span> F<br><br>
+            <span class="var">df</span> <span class="op">=</span> spark.table(<span class="str">"sashelp.cars"</span>)<br>
+            <span class="var">df</span> <span class="op">=</span> <span class="var">df</span>.filter(F.col(<span class="str">"horsepower"</span>) <span class="op">></span> <span class="str">300</span>)<br>
+            <span class="var">df</span> <span class="op">=</span> <span class="var">df</span>.withColumn(<span class="str">"tax_category"</span>, F.lit(<span class="str">"Premium"</span>))<br>
+            <span class="var">df</span> <span class="op">=</span> <span class="var">df</span>.withColumn(<span class="str">"adjusted_msrp"</span>, F.col(<span class="str">"msrp"</span>) <span class="op">*</span> <span class="str">1.05</span>)<span class="typing-cursor"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- MCP vs SKILL — TABBED -->
+<section class="integration">
+  <div class="integration-header">
+    <p class="section-label" style="margin-bottom: 0.75rem;">Integration Options</p>
+    <h2>Two paths, one engine</h2>
+    <p>Choose the integration that fits your workflow.</p>
+  </div>
+
+  <div class="tab-row">
+    <button class="tab-btn active" onclick="switchTab('mcp')">Alchemist MCP</button>
+    <button class="tab-btn" onclick="switchTab('skill')">Alchemist Skill</button>
+  </div>
+
+  <div class="tab-content active" id="tab-mcp">
+    <div class="tab-panel">
+      <div>
+        <h3>Alchemist MCP</h3>
+        <div class="mono">Model Context Protocol</div>
+        <ul>
+          <li>Standardized protocol for agent-to-tool communication</li>
+          <li>Works with any MCP-compatible coding agent</li>
+          <li>Connect once, convert any SAS program</li>
+          <li>Cloud or air-gapped Docker deployment</li>
+        </ul>
+        <div class="best-for">
+          <strong>Best for:</strong> Teams using multiple agents or building custom workflows
+        </div>
+      </div>
+      <div class="tab-visual">
+        <div class="tab-diagram">
+          <span class="node">Your Agent</span><br>
+          &#8595;<br>
+          <span class="node active">MCP Protocol</span><br>
+          &#8595;<br>
+          <span class="node active">Alchemist API</span><br>
+          &#8595;<br>
+          <span class="node">Converted Code</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="tab-content" id="tab-skill">
+    <div class="tab-panel">
+      <div>
+        <h3>Alchemist Skill</h3>
+        <div class="mono">Custom Agent Skill</div>
+        <ul>
+          <li>Native skill integration for specific platforms</li>
+          <li>Deep integration with agent capabilities</li>
+          <li>Platform-optimized conversion pipeline</li>
+          <li>Simplified setup for supported agents</li>
+        </ul>
+        <div class="best-for">
+          <strong>Best for:</strong> Teams committed to a single agent platform like Databricks
+        </div>
+      </div>
+      <div class="tab-visual">
+        <div class="tab-diagram">
+          <span class="node">Databricks / Platform</span><br>
+          &#8595;<br>
+          <span class="node active">Alchemist Skill</span><br>
+          &#8595;<br>
+          <span class="node active">Conversion Engine</span><br>
+          &#8595;<br>
+          <span class="node">Your Notebook</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- AGENTS -->
+<section class="agents">
+  <p class="section-label" style="margin-bottom: 0.75rem;">Compatibility</p>
+  <h2>Bring your own agent</h2>
+  <p>Works with the tools your team already uses.</p>
+  <div class="agents-row">
+    <div class="agent-item">
+      <div class="agent-icon">
+        <img src="logos/Databricks.png" alt="Databricks" width="46" height="46" style="object-fit:contain;">
+      </div>
+      <span>Databricks</span>
+    </div>
+    <div class="agent-item">
+      <div class="agent-icon">
+        <img src="logos/snowflake.png" alt="Snowflake" width="32" height="32" style="object-fit:contain;">
+      </div>
+      <span>Snowflake</span>
+    </div>
+    <div class="agent-item">
+      <div class="agent-icon">
+        <img src="logos/claude-logo.svg" alt="Claude Code" width="26" height="26" style="object-fit:contain;">
+      </div>
+      <span>Claude Code</span>
+    </div>
+    <div class="agent-item">
+      <div class="agent-icon">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--text-dim)" stroke-width="1.5"><rect x="4" y="4" width="16" height="16" rx="4"/><circle cx="9" cy="10" r="1.5"/><circle cx="15" cy="10" r="1.5"/><path d="M9 15h6"/></svg>
+      </div>
+      <span>Any Other</span>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta">
+  <h2>Ready to <span class="accent">accelerate</span><br>your migration?</h2>
+  <p>Talk to our team about connecting Alchemist to your agents.</p>
+  <div class="cta-buttons">
+    <a href="#" class="btn-primary">Book a Demo &rarr;</a>
+    <a href="#" class="btn-outline">Contact Sales</a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <span>Alchemist &mdash; Brought to you by T1A</span>
+  <span>getalchemist.io</span>
+</footer>
+
+<script>
+function switchTab(tab) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+  document.getElementById('tab-' + tab).classList.add('active');
+  event.target.classList.add('active');
+}
+</script>
+
+</body>
+</html>
