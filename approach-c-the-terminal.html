@@ -139,14 +139,16 @@
     color: var(--text-dim);
   }
   .terminal-body {
-    padding: 2rem 2.5rem;
+    padding: 1.5rem 2rem;
     font-family: 'JetBrains Mono', monospace;
-    font-size: 0.85rem;
-    line-height: 2;
-    min-height: 420px;
-    max-height: 520px;
-    overflow-y: auto;
+    font-size: 0.82rem;
+    line-height: 1.8;
     cursor: text;
+    overflow-y: auto;
+  }
+  /* Lock height after initial render so commands scroll instead of growing */
+  .terminal-body.locked {
+    max-height: var(--terminal-height);
   }
   .terminal-body::-webkit-scrollbar { width: 6px; }
   .terminal-body::-webkit-scrollbar-track { background: transparent; }
@@ -246,11 +248,34 @@
   }
   #terminal-output .term-result {
     color: var(--text-secondary);
+    white-space: pre-wrap;
   }
   #terminal-output .term-result .t-green { color: var(--green); }
   #terminal-output .term-result .t-cyan { color: var(--cyan); }
   #terminal-output .term-result .t-yellow { color: var(--yellow); }
   #terminal-output .term-result .t-pink { color: var(--pink); }
+
+  /* T-Rex game */
+  .dino-game {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    line-height: 1.15;
+    color: var(--green);
+    white-space: pre;
+    margin-top: 0.5rem;
+    user-select: none;
+  }
+  .dino-game .dino-score {
+    color: var(--yellow);
+    text-align: right;
+    display: block;
+  }
+  .dino-game .dino-over {
+    color: var(--pink);
+    text-align: center;
+    display: block;
+    margin-top: 0.25rem;
+  }
 
   .hero-actions {
     display: flex; gap: 1rem;
@@ -556,20 +581,81 @@
     color: var(--text-dim);
     font-size: 0.72rem;
   }
-  /* Animated dashes in ASCII */
-  .ascii-flow-line {
-    display: inline;
-    background: linear-gradient(90deg, var(--green), var(--text-dim), var(--green));
-    background-size: 200% 100%;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    animation: flow-shimmer 2s linear infinite;
+  /* Terminal-style flow diagram */
+  .term-flow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+    padding: 2rem 0;
   }
-  @keyframes flow-shimmer {
-    0% { background-position: 0% 50%; }
-    100% { background-position: 200% 50%; }
+  .term-flow-node {
+    border: 1px dashed var(--border);
+    border-radius: 8px;
+    padding: 1rem 1.5rem;
+    text-align: center;
+    min-width: 160px;
+    background: var(--bg-primary);
   }
+  .term-flow-node.highlight {
+    border-color: var(--green);
+    border-style: solid;
+    box-shadow: 0 0 20px rgba(0,255,136,0.05);
+  }
+  .term-flow-node .node-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+  .term-flow-node.highlight .node-title {
+    color: var(--green);
+  }
+  .term-flow-node .node-sub {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--text-dim);
+    margin-top: 0.25rem;
+  }
+  .term-flow-arrow {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0 0.75rem;
+    gap: 0.35rem;
+  }
+  .term-flow-arrow .arrow-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.68rem;
+    color: var(--green);
+    opacity: 0.7;
+    white-space: nowrap;
+  }
+  .term-flow-arrow .arrow-line {
+    width: 80px;
+    height: 0;
+    border-top: 1.5px dashed var(--text-dim);
+    position: relative;
+    animation: dash-flow 1.5s linear infinite;
+  }
+  .term-flow-arrow .arrow-line::after {
+    content: '';
+    position: absolute;
+    right: -1px; top: -5px;
+    border: 5px solid transparent;
+    border-left: 6px solid var(--text-dim);
+  }
+  @keyframes dash-flow {
+    to { stroke-dashoffset: -28; }
+  }
+  .term-flow-info {
+    margin-top: 2rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--text-dim);
+    line-height: 2;
+  }
+  .term-flow-info .a-green { color: var(--green); font-weight: 500; }
 
   /* === INTEGRATION — MCP vs SKILL AS TERMINAL DIFF === */
   .integration-section {
@@ -941,17 +1027,15 @@
       <span class="terminal-title">alchemist &mdash; agent integrations</span>
     </div>
     <div class="terminal-body">
-      <span class="t-prompt">$</span> <span class="t-cmd">alchemist</span> <span class="t-flag">--agents</span><br><br>
-      <span class="t-brand">ALCHEMIST AGENTS</span><br><br>
-      <span class="t-tagline">Migrate SAS with your coding agents.</span><br><br>
-      <span class="t-sub">Alchemist MCP and Skill let your team convert SAS to PySpark,<br>
-      Python, and more &mdash; directly from Databricks, Snowflake, Claude Code,<br>
-      or any coding agent.</span><br><br>
+      <span class="t-prompt">$</span> <span class="t-cmd">alchemist</span> <span class="t-flag">--agents</span><br>
+      <span class="t-brand">ALCHEMIST AGENTS</span><br>
+      <span class="t-tagline">Migrate SAS with your coding agents.</span><br>
+      <span class="t-sub">Alchemist MCP and Skill let your team convert SAS to PySpark, Python, and more &mdash;<br>directly from Databricks, Snowflake, Claude Code, or any coding agent.</span><br>
       <span class="t-comment"># How it works:</span><br>
-      <span class="t-output">&nbsp;&nbsp;1. You ask your coding agent to convert SAS code</span><br>
+      <span class="t-output">&nbsp;&nbsp;1. Ask your coding agent to convert SAS code</span><br>
       <span class="t-output">&nbsp;&nbsp;2. Agent delegates to Alchemist via MCP or Skill</span><br>
       <span class="t-output">&nbsp;&nbsp;3. Production-ready code returned in seconds</span><br>
-      <span class="t-output">&nbsp;&nbsp;4. Review, refine, execute</span><br><br>
+      <span class="t-output">&nbsp;&nbsp;4. Review, refine, execute</span><br>
       <span class="t-comment"># Try a command:</span>
       <div class="terminal-hints">
         <button class="hint-cmd" data-cmd="convert">convert</button>
@@ -1095,13 +1179,32 @@
   <p class="section-desc">Ask your coding agent to convert SAS code. It delegates to Alchemist, and production-ready output comes back.</p>
 
   <div class="ascii-diagram">
-    <span class="a-note">/* Architecture: Agent-to-Alchemist Flow */</span><br><br>
-    <span class="a-box">&#9484;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9488;</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="a-box">&#9484;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9488;</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="a-box">&#9484;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9488;</span><br>
-    <span class="a-box">&#9474;</span> <span class="a-label">&nbsp;Your Agent&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span> <span class="a-box">&#9474;</span> <span class="ascii-flow-line">&nbsp;&#9472;&#9472;&#9472;&#9472; request &#9472;&#9472;&#9472;&#9654;&nbsp;</span> <span class="a-box">&#9474;</span> <span class="a-green">&nbsp;Alchemist&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span> <span class="a-box">&#9474;</span> <span class="ascii-flow-line">&nbsp;&#9472;&#9472;&#9472;&#9472; output &#9472;&#9472;&#9472;&#9472;&#9654;&nbsp;</span> <span class="a-box">&#9474;</span> <span class="a-label">&nbsp;Your Notebook&nbsp;&nbsp;&nbsp;&nbsp;</span> <span class="a-box">&#9474;</span><br>
-    <span class="a-box">&#9474;</span> <span class="a-note">&nbsp;Databricks / Claude</span> <span class="a-box">&#9474;</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="a-box">&#9474;</span> <span class="a-note">&nbsp;MCP / Skill&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span> <span class="a-box">&#9474;</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="a-box">&#9474;</span> <span class="a-note">&nbsp;Review &amp; Execute&nbsp;</span> <span class="a-box">&#9474;</span><br>
-    <span class="a-box">&#9492;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9496;</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="a-box">&#9492;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9496;</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="a-box">&#9492;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9496;</span><br><br>
-    <span class="a-note">&nbsp;&nbsp;Supported agents:&nbsp;</span><span class="a-green">Databricks Genie Code</span><span class="a-note"> | </span><span class="a-green">Snowflake Cortex Code</span><span class="a-note"> | </span><span class="a-green">Claude Code</span><span class="a-note"> | </span><span class="a-green">Any MCP-compatible</span><br>
-    <span class="a-note">&nbsp;&nbsp;Endpoint:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="a-green">api.getalchemist.io</span><span class="a-note"> | </span><span class="a-green">self-hosted (Docker)</span>
+    <div class="term-flow">
+      <div class="term-flow-node">
+        <div class="node-title">Your Agent</div>
+        <div class="node-sub">Databricks / Claude</div>
+      </div>
+      <div class="term-flow-arrow">
+        <span class="arrow-label">request</span>
+        <div class="arrow-line"></div>
+      </div>
+      <div class="term-flow-node highlight">
+        <div class="node-title">Alchemist</div>
+        <div class="node-sub">MCP / Skill</div>
+      </div>
+      <div class="term-flow-arrow">
+        <span class="arrow-label">output</span>
+        <div class="arrow-line"></div>
+      </div>
+      <div class="term-flow-node">
+        <div class="node-title">Your Notebook</div>
+        <div class="node-sub">Review & Execute</div>
+      </div>
+    </div>
+    <div class="term-flow-info">
+      Supported agents: <span class="a-green">Databricks Genie Code</span> | <span class="a-green">Snowflake Cortex Code</span> | <span class="a-green">Claude Code</span> | <span class="a-green">Any MCP-compatible</span><br>
+      Endpoint:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span class="a-green">api.getalchemist.io</span> | <span class="a-green">self-hosted (Docker)</span>
+    </div>
   </div>
 </div>
 
@@ -1265,6 +1368,15 @@
 (function() {
   const input = document.getElementById('terminal-input');
   const output = document.getElementById('terminal-output');
+  const termBody = document.querySelector('.terminal-body');
+  let heightLocked = false;
+
+  function lockHeight() {
+    if (heightLocked) return;
+    heightLocked = true;
+    termBody.style.setProperty('--terminal-height', termBody.offsetHeight + 'px');
+    termBody.classList.add('locked');
+  }
 
   const commands = {
     help: `<span class="t-green">Available commands:</span>
@@ -1274,7 +1386,8 @@
   <span class="t-cyan">agents</span>      List supported coding agents
   <span class="t-cyan">deploy</span>      Show deployment options
   <span class="t-cyan">book</span>        Book a demo with our team
-  <span class="t-cyan">clear</span>       Clear terminal output`,
+  <span class="t-cyan">clear</span>       Clear terminal output
+  <span class="t-cyan">jumping-jack</span>       <span class="t-yellow">???</span>`,
 
     convert: `<span class="t-green">Converting SAS → PySpark...</span>
 
@@ -1296,13 +1409,160 @@
   <span class="t-cyan">[2]</span> Air-Gapped       →  docker pull alchemist/mcp:latest  <span class="t-yellow">(full control)</span>`,
 
     book: 'BOOK',
+    'jumping-jack': 'TREX',
   };
+
+  // === T-REX GAME ENGINE ===
+  let dinoInterval = null;
+
+  function startDinoGame() {
+    if (dinoInterval) { clearInterval(dinoInterval); dinoInterval = null; }
+
+    const W = 50, H = 8;
+    const GROUND_Y = H - 2;
+    let dino = { x: 4, y: GROUND_Y, vy: 0, jumping: false };
+    let obstacles = [];
+    let frame = 0;
+    let score = 0;
+    let alive = true;
+    let speed = 3;
+
+    const gameEl = document.createElement('div');
+    gameEl.className = 'dino-game';
+    output.appendChild(gameEl);
+
+    const dinoFrames = [
+      ['  @  ', ' /|] ', ' / \\ '],
+      ['  @  ', ' /|] ', ' /|  '],
+    ];
+    const cactus = ['|/|', ' | '];
+
+    function jump() {
+      if (!dino.jumping && alive) {
+        dino.jumping = true;
+        dino.vy = -2.5;
+      }
+    }
+
+    function onKey(e) {
+      if (e.code === 'Space' || e.code === 'ArrowUp') {
+        e.preventDefault();
+        if (!alive) { restart(); return; }
+        jump();
+      }
+      if (e.code === 'Escape') { stop(); }
+    }
+
+    function restart() {
+      dino = { x: 4, y: GROUND_Y, vy: 0, jumping: false };
+      obstacles = [];
+      frame = 0; score = 0; alive = true; speed = 3;
+    }
+
+    function stop() {
+      clearInterval(dinoInterval);
+      dinoInterval = null;
+      document.removeEventListener('keydown', onKey);
+      gameEl.remove();
+      input.focus();
+    }
+
+    document.addEventListener('keydown', onKey);
+
+    dinoInterval = setInterval(function() {
+      if (!alive) return;
+      frame++;
+      score++;
+      if (score % 100 === 0 && speed < 6) speed += 0.5;
+
+      // Physics
+      if (dino.jumping) {
+        dino.y += dino.vy;
+        dino.vy += 0.5;
+        if (dino.y >= GROUND_Y) {
+          dino.y = GROUND_Y;
+          dino.jumping = false;
+          dino.vy = 0;
+        }
+      }
+
+      // Spawn obstacles
+      if (frame % Math.floor(20 / (speed / 3)) === 0) {
+        obstacles.push({ x: W - 1 });
+      }
+
+      // Move obstacles
+      for (let i = obstacles.length - 1; i >= 0; i--) {
+        obstacles[i].x -= 1;
+        if (obstacles[i].x < -3) obstacles.splice(i, 1);
+      }
+
+      // Collision
+      const dinoTop = Math.round(dino.y) - 2;
+      const dinoBottom = Math.round(dino.y);
+      for (const o of obstacles) {
+        if (o.x >= dino.x && o.x <= dino.x + 4) {
+          if (dinoBottom >= GROUND_Y - 1) {
+            alive = false;
+          }
+        }
+      }
+
+      // Render
+      const grid = [];
+      for (let r = 0; r < H; r++) {
+        grid[r] = [];
+        for (let c = 0; c < W; c++) grid[r][c] = ' ';
+      }
+
+      // Ground
+      for (let c = 0; c < W; c++) grid[H - 1][c] = (c + frame) % 4 === 0 ? '.' : '_';
+
+      // Dino
+      const df = dinoFrames[frame % 2];
+      const dy = Math.round(dino.y);
+      for (let r = 0; r < df.length; r++) {
+        for (let c = 0; c < df[r].length; c++) {
+          const gr = dy - 2 + r;
+          const gc = dino.x + c;
+          if (gr >= 0 && gr < H && gc >= 0 && gc < W && df[r][c] !== ' ') {
+            grid[gr][gc] = df[r][c];
+          }
+        }
+      }
+
+      // Obstacles
+      for (const o of obstacles) {
+        for (let r = 0; r < cactus.length; r++) {
+          for (let c = 0; c < cactus[r].length; c++) {
+            const gr = GROUND_Y - 1 + r;
+            const gc = o.x + c;
+            if (gr >= 0 && gr < H && gc >= 0 && gc < W && cactus[r][c] !== ' ') {
+              grid[gr][gc] = cactus[r][c];
+            }
+          }
+        }
+      }
+
+      let html = '<span class="dino-score">SCORE: ' + String(score).padStart(5, '0') + '  [ESC to quit]</span>\n';
+      for (let r = 0; r < H; r++) {
+        html += grid[r].join('') + '\n';
+      }
+      if (!alive) {
+        html += '<span class="dino-over">GAME OVER — score: ' + score + '  [SPACE to restart, ESC to quit]</span>';
+      }
+      gameEl.innerHTML = html;
+      termBody.scrollTop = termBody.scrollHeight;
+    }, 100);
+  }
+  // === END T-REX ===
 
   input.addEventListener('keydown', function(e) {
     if (e.key !== 'Enter') return;
     const cmd = input.value.trim().toLowerCase();
     if (!cmd) return;
 
+    lockHeight();
     input.value = '';
 
     if (cmd === 'clear') {
@@ -1318,7 +1578,14 @@
 
     const result = commands[cmd];
 
-    if (result === 'SCROLL') {
+    if (result === 'TREX') {
+      const resultLine = document.createElement('div');
+      resultLine.className = 'term-line term-result';
+      resultLine.innerHTML = '<span class="t-green">Loading jumping-jack...</span> <span class="t-yellow">SPACE</span> to jump, <span class="t-cyan">ESC</span> to quit';
+      output.appendChild(resultLine);
+      termBody.scrollTop = termBody.scrollHeight;
+      setTimeout(startDinoGame, 400);
+    } else if (result === 'SCROLL') {
       const scrollTarget = document.querySelector('.conversation-section');
       if (scrollTarget) {
         const resultLine = document.createElement('div');
@@ -1345,8 +1612,7 @@
     }
 
     // Keep terminal scrolled to bottom
-    const body = input.closest('.terminal-body');
-    if (body) body.scrollTop = body.scrollHeight;
+    termBody.scrollTop = termBody.scrollHeight;
   });
 
   // Clickable hint commands
