@@ -1,837 +1,1059 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Alchemist Agents — Approach A: The Flow</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-<style>
-  :root {
-    --green: #00FF88;
-    --green-dim: #00cc6a;
-    --green-glow: rgba(0, 255, 136, 0.15);
-    --bg-primary: #000306;
-    --bg-card: #0a0f14;
-    --bg-card-hover: #0f1820;
-    --border: #1a2a35;
-    --text-primary: #f0f4f8;
-    --text-secondary: #8a9bb0;
-    --text-dim: #4a5a6a;
-  }
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Alchemist Agents — Approach A: The Flow</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --green: #00ff88;
+        --green-dim: #00cc6a;
+        --green-glow: rgba(0, 255, 136, 0.15);
+        --bg-primary: #000306;
+        --bg-card: #0a0f14;
+        --bg-card-hover: #0f1820;
+        --border: #1a2a35;
+        --text-primary: #f0f4f8;
+        --text-secondary: #8a9bb0;
+        --text-dim: #4a5a6a;
+      }
 
-  * { margin: 0; padding: 0; box-sizing: border-box; }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
 
-  body {
-    background: var(--bg-primary);
-    color: var(--text-primary);
-    font-family: 'Space Grotesk', sans-serif;
-    overflow-x: hidden;
-    -webkit-font-smoothing: antialiased;
-  }
+      body {
+        background: var(--bg-primary);
+        color: var(--text-primary);
+        font-family: "Space Grotesk", sans-serif;
+        overflow-x: hidden;
+        -webkit-font-smoothing: antialiased;
+      }
 
-  /* NAV */
-  nav {
-    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-    padding: 1.25rem 3rem;
-    display: flex; justify-content: space-between; align-items: center;
-    background: rgba(0,3,6,0.85);
-    backdrop-filter: blur(20px);
-    border-bottom: 1px solid rgba(26,42,53,0.5);
-  }
-  .logo {
-    font-weight: 700; font-size: 1.3rem; letter-spacing: -0.02em;
-    color: var(--text-primary);
-  }
-  .logo span { color: var(--green); }
-  nav a {
-    color: var(--text-secondary); text-decoration: none; font-size: 0.9rem;
-    transition: color 0.2s;
-  }
-  nav a:hover { color: var(--green); }
-  .nav-links { display: flex; gap: 2rem; align-items: center; }
-  .btn-nav {
-    padding: 0.5rem 1.25rem;
-    border: 1px solid var(--green);
-    color: var(--green);
-    border-radius: 6px;
-    font-size: 0.85rem;
-    font-weight: 500;
-    transition: all 0.2s;
-    text-decoration: none;
-  }
-  .btn-nav:hover {
-    background: var(--green); color: var(--bg-primary);
-  }
+      /* NAV */
+      nav {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 100;
+        padding: 1.25rem 3rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: rgba(0, 3, 6, 0.85);
+        backdrop-filter: blur(20px);
+        border-bottom: 1px solid rgba(26, 42, 53, 0.5);
+      }
+      .logo {
+        font-weight: 700;
+        font-size: 1.3rem;
+        letter-spacing: -0.02em;
+        color: var(--text-primary);
+      }
+      .logo span {
+        color: var(--green);
+      }
+      nav a {
+        color: var(--text-secondary);
+        text-decoration: none;
+        font-size: 0.9rem;
+        transition: color 0.2s;
+      }
+      nav a:hover {
+        color: var(--green);
+      }
+      .nav-links {
+        display: flex;
+        gap: 2rem;
+        align-items: center;
+      }
+      .btn-nav {
+        padding: 0.5rem 1.25rem;
+        border: 1px solid var(--green);
+        color: var(--green);
+        border-radius: 6px;
+        font-size: 0.85rem;
+        font-weight: 500;
+        transition: all 0.2s;
+        text-decoration: none;
+      }
+      .btn-nav:hover {
+        background: var(--green);
+        color: var(--bg-primary);
+      }
 
-  /* HERO */
-  .hero {
-    min-height: 100vh;
-    display: flex; flex-direction: column;
-    align-items: center; justify-content: center;
-    padding: 8rem 2rem 4rem;
-    text-align: center;
-    position: relative;
-  }
-  .hero::before {
-    content: '';
-    position: absolute; top: 0; left: 50%; transform: translateX(-50%);
-    width: 800px; height: 800px;
-    background: radial-gradient(circle, var(--green-glow) 0%, transparent 70%);
-    pointer-events: none;
-  }
-  .hero-badge {
-    display: inline-flex; align-items: center; gap: 0.5rem;
-    padding: 0.4rem 1rem;
-    border: 1px solid var(--border);
-    border-radius: 100px;
-    font-size: 0.8rem;
-    color: var(--text-secondary);
-    margin-bottom: 2rem;
-    background: var(--bg-card);
-  }
-  .hero-badge .dot {
-    width: 6px; height: 6px; border-radius: 50%;
-    background: var(--green);
-    box-shadow: 0 0 8px var(--green);
-  }
-  h1 {
-    font-size: clamp(2.5rem, 6vw, 4.5rem);
-    font-weight: 700;
-    line-height: 1.1;
-    letter-spacing: -0.03em;
-    max-width: 800px;
-    margin-bottom: 1.5rem;
-  }
-  h1 .accent { color: var(--green); }
-  .hero-sub {
-    font-size: 1.15rem;
-    color: var(--text-secondary);
-    max-width: 560px;
-    line-height: 1.6;
-    margin-bottom: 2.5rem;
-  }
+      /* HERO */
+      .hero {
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 8rem 2rem 4rem;
+        text-align: center;
+        position: relative;
+      }
+      .hero::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 800px;
+        height: 800px;
+        background: radial-gradient(
+          circle,
+          var(--green-glow) 0%,
+          transparent 70%
+        );
+        pointer-events: none;
+      }
+      .hero-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.4rem 1rem;
+        border: 1px solid var(--border);
+        border-radius: 100px;
+        font-size: 0.8rem;
+        color: var(--text-secondary);
+        margin-bottom: 2rem;
+        background: var(--bg-card);
+      }
+      .hero-badge .dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: var(--green);
+        box-shadow: 0 0 8px var(--green);
+      }
+      h1 {
+        font-size: clamp(2.5rem, 6vw, 4.5rem);
+        font-weight: 700;
+        line-height: 1.1;
+        letter-spacing: -0.03em;
+        max-width: 800px;
+        margin-bottom: 1.5rem;
+      }
+      h1 .accent {
+        color: var(--green);
+      }
+      .hero-sub {
+        font-size: 1.15rem;
+        color: var(--text-secondary);
+        max-width: 560px;
+        line-height: 1.6;
+        margin-bottom: 2.5rem;
+      }
 
-  /* VIDEO EMBED */
-  .video-wrapper {
-    position: relative;
-    width: 100%;
-    max-width: 840px;
-    margin: 0 auto 0;
-    border-radius: 16px;
-    overflow: hidden;
-    border: 1px solid var(--border);
-    box-shadow: 0 40px 100px rgba(0,255,136,0.06), 0 0 0 1px rgba(0,255,136,0.05);
-  }
-  .video-wrapper::before {
-    content: ''; display: block;
-    padding-top: 56.25%;
-  }
-  .video-wrapper iframe {
-    position: absolute; top: 0; left: 0;
-    width: 100%; height: 100%;
-    border: none;
-  }
+      /* VIDEO EMBED */
+      .video-wrapper {
+        position: relative;
+        width: 100%;
+        max-width: 840px;
+        margin: 0 auto 0;
+        border-radius: 16px;
+        overflow: hidden;
+        border: 1px solid var(--border);
+        box-shadow:
+          0 40px 100px rgba(0, 255, 136, 0.06),
+          0 0 0 1px rgba(0, 255, 136, 0.05);
+      }
+      .video-wrapper::before {
+        content: "";
+        display: block;
+        padding-top: 56.25%;
+      }
+      .video-wrapper iframe {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        border: none;
+      }
 
-  /* SECTIONS */
-  section {
-    padding: 6rem 2rem;
-    max-width: 1100px;
-    margin: 0 auto;
-  }
-  .section-label {
-    font-size: 0.75rem;
-    text-transform: uppercase;
-    letter-spacing: 0.15em;
-    color: var(--green);
-    margin-bottom: 1rem;
-    font-weight: 600;
-  }
-  h2 {
-    font-size: clamp(1.8rem, 3.5vw, 2.8rem);
-    font-weight: 700;
-    letter-spacing: -0.02em;
-    line-height: 1.15;
-    margin-bottom: 1rem;
-  }
-  .section-desc {
-    color: var(--text-secondary);
-    font-size: 1.05rem;
-    line-height: 1.6;
-    max-width: 600px;
-    margin-bottom: 3rem;
-  }
+      /* SECTIONS */
+      section {
+        padding: 6rem 2rem;
+        max-width: 1100px;
+        margin: 0 auto;
+      }
+      .section-label {
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.15em;
+        color: var(--green);
+        margin-bottom: 1rem;
+        font-weight: 600;
+      }
+      h2 {
+        font-size: clamp(1.8rem, 3.5vw, 2.8rem);
+        font-weight: 700;
+        letter-spacing: -0.02em;
+        line-height: 1.15;
+        margin-bottom: 1rem;
+      }
+      .section-desc {
+        color: var(--text-secondary);
+        font-size: 1.05rem;
+        line-height: 1.6;
+        max-width: 600px;
+        margin-bottom: 3rem;
+      }
 
-  /* ANIMATED CODE BLOCK */
-  .code-demo {
-    padding: 6rem 2rem;
-    max-width: 1100px;
-    margin: 0 auto;
-  }
-  .code-container {
-    display: grid;
-    grid-template-columns: 1fr auto 1fr;
-    gap: 1.5rem;
-    align-items: start;
-  }
-  .code-block {
-    background: var(--bg-card);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    overflow: hidden;
-  }
-  .code-header {
-    display: flex; align-items: center; gap: 0.5rem;
-    padding: 0.85rem 1.25rem;
-    border-bottom: 1px solid var(--border);
-    font-size: 0.8rem; color: var(--text-dim);
-    font-family: 'JetBrains Mono', monospace;
-  }
-  .code-header .lang {
-    color: var(--green); font-weight: 500;
-  }
-  .code-body {
-    padding: 1.25rem;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.82rem;
-    line-height: 1.7;
-    min-height: 220px;
-  }
-  .code-body .keyword { color: #ff79c6; }
-  .code-body .string { color: #f1fa8c; }
-  .code-body .function { color: #8be9fd; }
-  .code-body .comment { color: var(--text-dim); }
-  .code-body .variable { color: #bd93f9; }
-  .code-body .operator { color: var(--green); }
+      /* ANIMATED CODE BLOCK */
+      .code-demo {
+        padding: 6rem 2rem;
+        max-width: 1100px;
+        margin: 0 auto;
+      }
+      .code-container {
+        display: grid;
+        grid-template-columns: 1fr auto 1fr;
+        gap: 1.5rem;
+        align-items: stretch;
+      }
+      .code-block {
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+      }
+      .code-header {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.85rem 1.25rem;
+        border-bottom: 1px solid var(--border);
+        font-size: 0.8rem;
+        color: var(--text-dim);
+        font-family: "JetBrains Mono", monospace;
+      }
+      .code-header .lang {
+        color: var(--green);
+        font-weight: 500;
+      }
+      .code-body {
+        padding: 1.25rem;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.82rem;
+        line-height: 1.7;
+        min-height: 220px;
+        flex: 1;
+      }
+      .code-body .keyword {
+        color: #ff79c6;
+      }
+      .code-body .string {
+        color: #f1fa8c;
+      }
+      .code-body .function {
+        color: #8be9fd;
+      }
+      .code-body .comment {
+        color: var(--text-dim);
+      }
+      .code-body .variable {
+        color: #bd93f9;
+      }
+      .code-body .operator {
+        color: var(--green);
+      }
 
-  .arrow-col {
-    display: flex; align-items: center; justify-content: center;
-    padding-top: 6rem;
-  }
-  .arrow-icon {
-    width: 48px; height: 48px;
-    border: 1px solid var(--border);
-    border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    color: var(--green);
-    font-size: 1.2rem;
-    position: relative;
-  }
-  .arrow-icon::after {
-    content: '';
-    position: absolute;
-    width: 60px; height: 60px;
-    border-radius: 50%;
-    border: 1px solid var(--green-glow);
-    animation: pulse-ring 2s ease-out infinite;
-  }
-  @keyframes pulse-ring {
-    0% { transform: scale(1); opacity: 0.6; }
-    100% { transform: scale(1.6); opacity: 0; }
-  }
+      .arrow-col {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding-top: 6rem;
+      }
+      .arrow-icon {
+        width: 48px;
+        height: 48px;
+        border: 1px solid var(--border);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--green);
+        font-size: 1.2rem;
+        position: relative;
+      }
+      .arrow-icon::after {
+        content: "";
+        position: absolute;
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        border: 1px solid var(--green-glow);
+        animation: pulse-ring 2s ease-out infinite;
+      }
+      @keyframes pulse-ring {
+        0% {
+          transform: scale(1);
+          opacity: 0.6;
+        }
+        100% {
+          transform: scale(1.6);
+          opacity: 0;
+        }
+      }
 
-  .typing-cursor {
-    display: inline-block;
-    width: 2px; height: 1em;
-    background: var(--green);
-    margin-left: 2px;
-    animation: blink 0.8s step-end infinite;
-    vertical-align: text-bottom;
-  }
-  @keyframes blink {
-    50% { opacity: 0; }
-  }
+      .typing-cursor {
+        display: inline-block;
+        width: 2px;
+        height: 1em;
+        background: var(--green);
+        margin-left: 2px;
+        animation: blink 0.8s step-end infinite;
+        vertical-align: text-bottom;
+      }
+      @keyframes blink {
+        50% {
+          opacity: 0;
+        }
+      }
 
-  /* PROBLEM */
-  .problem-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 1.5rem;
-  }
-  .problem-card {
-    background: var(--bg-card);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 2rem 1.5rem;
-    transition: border-color 0.3s;
-  }
-  .problem-card:hover { border-color: var(--green-dim); }
-  .problem-card .icon {
-    font-size: 1.5rem; margin-bottom: 1rem;
-  }
-  .problem-card h3 {
-    font-size: 1.05rem; font-weight: 600;
-    margin-bottom: 0.6rem;
-  }
-  .problem-card p {
-    font-size: 0.9rem; color: var(--text-secondary); line-height: 1.5;
-  }
+      /* PROBLEM */
+      .problem-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1.5rem;
+      }
+      .problem-card {
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 2rem 1.5rem;
+        transition: border-color 0.3s;
+      }
+      .problem-card:hover {
+        border-color: var(--green-dim);
+      }
+      .problem-card .icon {
+        font-size: 1.5rem;
+        margin-bottom: 1rem;
+      }
+      .problem-card h3 {
+        font-size: 1.05rem;
+        font-weight: 600;
+        margin-bottom: 0.6rem;
+      }
+      .problem-card p {
+        font-size: 0.9rem;
+        color: var(--text-secondary);
+        line-height: 1.5;
+      }
 
-  /* ARCHITECTURE */
-  .arch-diagram {
-    background: var(--bg-card);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 4rem 3rem;
-    position: relative;
-    overflow: hidden;
-  }
-  .arch-flow {
-    display: flex;
-    align-items: flex-start;
-    justify-content: center;
-    gap: 0;
-    position: relative;
-  }
-  .arch-node {
-    display: flex; flex-direction: column;
-    align-items: center; gap: 1rem;
-    text-align: center;
-    flex: 0 0 200px;
-    position: relative;
-    z-index: 1;
-  }
-  .arch-box {
-    width: 180px; height: 100px;
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    display: flex; align-items: center; justify-content: center;
-    flex-direction: column; gap: 0.25rem;
-    font-size: 0.95rem; font-weight: 600;
-    background: var(--bg-primary);
-    transition: border-color 0.3s;
-  }
-  .arch-box.green-border {
-    border-color: var(--green);
-    box-shadow: 0 0 30px rgba(0,255,136,0.06);
-  }
-  .arch-box .arch-box-sub {
-    font-size: 0.7rem;
-    font-weight: 400;
-    color: var(--text-dim);
-    font-family: 'JetBrains Mono', monospace;
-  }
-  .arch-label {
-    font-size: 0.75rem; color: var(--text-dim);
-    line-height: 1.4;
-    max-width: 160px;
-  }
-  .arch-connector {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: flex-start;
-    padding-top: 38px;
-    min-width: 100px;
-    max-width: 160px;
-    position: relative;
-    z-index: 1;
-  }
-  .arch-connector-label {
-    font-size: 0.7rem;
-    color: var(--green);
-    font-family: 'JetBrains Mono', monospace;
-    white-space: nowrap;
-    margin-bottom: 0.75rem;
-    opacity: 0.8;
-  }
-  .arch-connector-line {
-    width: 100%;
-    height: 24px;
-    position: relative;
-    display: flex;
-    align-items: center;
-  }
-  .arch-connector-line svg {
-    width: 100%;
-    height: 24px;
-    overflow: visible;
-  }
-  .arch-dashed {
-    stroke: var(--text-dim);
-    stroke-width: 1.5;
-    stroke-dasharray: 8 6;
-    fill: none;
-    animation: dash-flow 1.5s linear infinite;
-  }
-  .arch-arrowhead {
-    fill: var(--text-dim);
-  }
-  @keyframes dash-flow {
-    to { stroke-dashoffset: -28; }
-  }
+      /* ARCHITECTURE */
+      .arch-diagram {
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 4rem 3rem;
+        position: relative;
+        overflow: hidden;
+      }
+      .arch-flow {
+        display: flex;
+        align-items: flex-start;
+        justify-content: center;
+        gap: 0;
+        position: relative;
+      }
+      .arch-node {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
+        text-align: center;
+        flex: 0 0 200px;
+        position: relative;
+        z-index: 1;
+      }
+      .arch-box {
+        width: 180px;
+        height: 100px;
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        gap: 0.25rem;
+        font-size: 0.95rem;
+        font-weight: 600;
+        background: var(--bg-primary);
+        transition: border-color 0.3s;
+      }
+      .arch-box.green-border {
+        border-color: var(--green);
+        box-shadow: 0 0 30px rgba(0, 255, 136, 0.06);
+      }
+      .arch-box .arch-box-sub {
+        font-size: 0.7rem;
+        font-weight: 400;
+        color: var(--text-dim);
+        font-family: "JetBrains Mono", monospace;
+      }
+      .arch-label {
+        font-size: 0.75rem;
+        color: var(--text-dim);
+        line-height: 1.4;
+        max-width: 160px;
+      }
+      .arch-connector {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-start;
+        padding-top: 38px;
+        min-width: 100px;
+        max-width: 160px;
+        position: relative;
+        z-index: 1;
+      }
+      .arch-connector-label {
+        font-size: 0.7rem;
+        color: var(--green);
+        font-family: "JetBrains Mono", monospace;
+        white-space: nowrap;
+        margin-bottom: 0.75rem;
+        opacity: 0.8;
+      }
+      .arch-connector-line {
+        width: 100%;
+        height: 24px;
+        position: relative;
+        display: flex;
+        align-items: center;
+      }
+      .arch-connector-line svg {
+        width: 100%;
+        height: 24px;
+        overflow: visible;
+      }
+      .arch-dashed {
+        stroke: var(--text-dim);
+        stroke-width: 1.5;
+        stroke-dasharray: 8 6;
+        fill: none;
+        animation: dash-flow 1.5s linear infinite;
+      }
+      .arch-arrowhead {
+        fill: var(--text-dim);
+      }
+      @keyframes dash-flow {
+        to {
+          stroke-dashoffset: -28;
+        }
+      }
 
-  /* MCP vs SKILL */
-  .compare-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 2rem;
-  }
-  .compare-card {
-    background: var(--bg-card);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 2.5rem;
-    position: relative;
-    overflow: hidden;
-    transition: border-color 0.3s;
-  }
-  .compare-card:hover { border-color: var(--green-dim); }
-  .compare-card::before {
-    content: '';
-    position: absolute; top: 0; left: 0; right: 0;
-    height: 3px;
-    background: linear-gradient(90deg, var(--green), transparent);
-  }
-  .compare-card h3 {
-    font-size: 1.4rem; font-weight: 700;
-    margin-bottom: 0.5rem;
-  }
-  .compare-card .subtitle {
-    color: var(--green); font-size: 0.85rem; font-weight: 500;
-    margin-bottom: 1.5rem;
-    font-family: 'JetBrains Mono', monospace;
-  }
-  .compare-card ul {
-    list-style: none;
-    display: flex; flex-direction: column; gap: 0.75rem;
-  }
-  .compare-card li {
-    font-size: 0.9rem; color: var(--text-secondary); line-height: 1.5;
-    padding-left: 1.25rem;
-    position: relative;
-  }
-  .compare-card li::before {
-    content: '';
-    position: absolute; left: 0; top: 0.55em;
-    width: 6px; height: 6px;
-    border-radius: 50%;
-    background: var(--green);
-  }
-  .compare-card .use-case {
-    margin-top: 1.5rem;
-    padding-top: 1.5rem;
-    border-top: 1px solid var(--border);
-    font-size: 0.85rem;
-    color: var(--text-dim);
-  }
-  .compare-card .use-case strong {
-    color: var(--text-secondary);
-  }
+      /* MCP vs SKILL */
+      .compare-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem;
+      }
+      .compare-card {
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 2.5rem;
+        position: relative;
+        overflow: hidden;
+        transition: border-color 0.3s;
+      }
+      .compare-card:hover {
+        border-color: var(--green-dim);
+      }
+      .compare-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: linear-gradient(90deg, var(--green), transparent);
+      }
+      .compare-card h3 {
+        font-size: 1.4rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+      }
+      .compare-card .subtitle {
+        color: var(--green);
+        font-size: 0.85rem;
+        font-weight: 500;
+        margin-bottom: 1.5rem;
+        font-family: "JetBrains Mono", monospace;
+      }
+      .compare-card ul {
+        list-style: none;
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+      }
+      .compare-card li {
+        font-size: 0.9rem;
+        color: var(--text-secondary);
+        line-height: 1.5;
+        padding-left: 1.25rem;
+        position: relative;
+      }
+      .compare-card li::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 0.55em;
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: var(--green);
+      }
+      .compare-card .use-case {
+        margin-top: 1.5rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid var(--border);
+        font-size: 0.85rem;
+        color: var(--text-dim);
+      }
+      .compare-card .use-case strong {
+        color: var(--text-secondary);
+      }
 
-  /* AGENTS STRIP */
-  .agents-strip {
-    padding: 4rem 2rem;
-    max-width: 1100px;
-    margin: 0 auto;
-    text-align: center;
-  }
-  .agents-logos {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 3rem;
-    flex-wrap: wrap;
-    margin-top: 2rem;
-  }
-  .agent-logo {
-    display: flex; flex-direction: column;
-    align-items: center; gap: 0.6rem;
-    opacity: 0.6;
-    transition: opacity 0.3s;
-  }
-  .agent-logo:hover { opacity: 1; }
-  .agent-logo .icon-circle {
-    width: 64px; height: 64px;
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    display: flex; align-items: center; justify-content: center;
-    background: var(--bg-card);
-    font-size: 1.5rem;
-  }
-  .agent-logo span {
-    font-size: 0.75rem; color: var(--text-dim);
-  }
+      /* AGENTS STRIP */
+      .agents-strip {
+        padding: 4rem 2rem;
+        max-width: 1100px;
+        margin: 0 auto;
+        text-align: center;
+      }
+      .agents-logos {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 3rem;
+        flex-wrap: wrap;
+        margin-top: 2rem;
+      }
+      .agent-logo {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.6rem;
+        opacity: 1;
+        transition: opacity 0.3s;
+      }
+      .agent-logo:hover {
+        opacity: 1;
+      }
+      .agent-logo .icon-circle {
+        width: 64px;
+        height: 64px;
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: var(--bg-card);
+        font-size: 1.5rem;
+      }
+      .agent-logo span {
+        font-size: 0.75rem;
+        color: var(--text-dim);
+      }
 
-  /* DEPLOYMENT */
-  .deploy-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 2rem;
-  }
-  .deploy-card {
-    background: var(--bg-card);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 2.5rem;
-    transition: border-color 0.3s;
-  }
-  .deploy-card:hover { border-color: var(--green-dim); }
-  .deploy-card .deploy-icon {
-    font-size: 2rem; margin-bottom: 1rem;
-  }
-  .deploy-card h3 {
-    font-size: 1.2rem; font-weight: 600; margin-bottom: 0.5rem;
-  }
-  .deploy-card p {
-    font-size: 0.9rem; color: var(--text-secondary); line-height: 1.5;
-  }
-  .deploy-card code {
-    display: block;
-    margin-top: 1rem;
-    padding: 0.75rem 1rem;
-    background: var(--bg-primary);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.8rem;
-    color: var(--green);
-  }
+      /* DEPLOYMENT */
+      .deploy-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem;
+      }
+      .deploy-card {
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 2.5rem;
+        transition: border-color 0.3s;
+      }
+      .deploy-card:hover {
+        border-color: var(--green-dim);
+      }
+      .deploy-card .deploy-icon {
+        font-size: 2rem;
+        margin-bottom: 1rem;
+      }
+      .deploy-card h3 {
+        font-size: 1.2rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+      }
+      .deploy-card p {
+        font-size: 0.9rem;
+        color: var(--text-secondary);
+        line-height: 1.5;
+      }
+      .deploy-card code {
+        display: block;
+        margin-top: 1rem;
+        padding: 0.75rem 1rem;
+        background: var(--bg-primary);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.8rem;
+        color: var(--green);
+      }
 
-  /* CTA */
-  .cta-section {
-    padding: 8rem 2rem;
-    text-align: center;
-    position: relative;
-  }
-  .cta-section::before {
-    content: '';
-    position: absolute; bottom: 0; left: 50%; transform: translateX(-50%);
-    width: 600px; height: 600px;
-    background: radial-gradient(circle, var(--green-glow) 0%, transparent 70%);
-    pointer-events: none;
-  }
-  .cta-section h2 {
-    font-size: clamp(2rem, 4vw, 3.2rem);
-    margin-bottom: 1rem;
-  }
-  .cta-section p {
-    color: var(--text-secondary);
-    font-size: 1.1rem;
-    margin-bottom: 2.5rem;
-    max-width: 500px;
-    margin-left: auto; margin-right: auto;
-  }
-  .btn-cta {
-    display: inline-flex; align-items: center; gap: 0.5rem;
-    padding: 1rem 2.5rem;
-    background: var(--green);
-    color: var(--bg-primary);
-    font-weight: 600;
-    font-size: 1rem;
-    border: none; border-radius: 8px;
-    cursor: pointer;
-    text-decoration: none;
-    transition: all 0.2s;
-    font-family: 'Space Grotesk', sans-serif;
-  }
-  .btn-cta:hover {
-    box-shadow: 0 0 30px rgba(0,255,136,0.3);
-    transform: translateY(-1px);
-  }
-  .btn-cta-secondary {
-    display: inline-flex; align-items: center; gap: 0.5rem;
-    padding: 1rem 2.5rem;
-    background: transparent;
-    color: var(--green);
-    font-weight: 600;
-    font-size: 1rem;
-    border: 1px solid var(--green);
-    border-radius: 8px;
-    cursor: pointer;
-    text-decoration: none;
-    margin-left: 1rem;
-    transition: all 0.2s;
-    font-family: 'Space Grotesk', sans-serif;
-  }
-  .btn-cta-secondary:hover {
-    background: rgba(0,255,136,0.08);
-  }
+      /* CTA */
+      .cta-section {
+        padding: 8rem 2rem;
+        text-align: center;
+        position: relative;
+      }
+      .cta-section::before {
+        content: "";
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 600px;
+        height: 600px;
+        background: radial-gradient(
+          circle,
+          var(--green-glow) 0%,
+          transparent 70%
+        );
+        pointer-events: none;
+      }
+      .cta-section h2 {
+        font-size: clamp(2rem, 4vw, 3.2rem);
+        margin-bottom: 1rem;
+      }
+      .cta-section p {
+        color: var(--text-secondary);
+        font-size: 1.1rem;
+        margin-bottom: 2.5rem;
+        max-width: 500px;
+        margin-left: auto;
+        margin-right: auto;
+      }
+      .btn-cta {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 1rem 2.5rem;
+        background: var(--green);
+        color: var(--bg-primary);
+        font-weight: 600;
+        font-size: 1rem;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        text-decoration: none;
+        transition: all 0.2s;
+        font-family: "Space Grotesk", sans-serif;
+      }
+      .btn-cta:hover {
+        box-shadow: 0 0 30px rgba(0, 255, 136, 0.3);
+        transform: translateY(-1px);
+      }
+      .btn-cta-secondary {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 1rem 2.5rem;
+        background: transparent;
+        color: var(--green);
+        font-weight: 600;
+        font-size: 1rem;
+        border: 1px solid var(--green);
+        border-radius: 8px;
+        cursor: pointer;
+        text-decoration: none;
+        margin-left: 1rem;
+        transition: all 0.2s;
+        font-family: "Space Grotesk", sans-serif;
+      }
+      .btn-cta-secondary:hover {
+        background: rgba(0, 255, 136, 0.08);
+      }
 
-  /* FOOTER */
-  footer {
-    padding: 2rem 3rem;
-    border-top: 1px solid var(--border);
-    display: flex; justify-content: space-between; align-items: center;
-    font-size: 0.8rem; color: var(--text-dim);
-    max-width: 1100px; margin: 0 auto;
-  }
+      /* FOOTER */
+      footer {
+        padding: 2rem 3rem;
+        border-top: 1px solid var(--border);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 0.8rem;
+        color: var(--text-dim);
+        max-width: 1100px;
+        margin: 0 auto;
+      }
 
-  /* RESPONSIVE */
-  @media (max-width: 768px) {
-    .code-container { grid-template-columns: 1fr; }
-    .arrow-col { transform: rotate(90deg); padding: 1rem 0; }
-    .problem-grid { grid-template-columns: 1fr; }
-    .compare-grid { grid-template-columns: 1fr; }
-    .deploy-grid { grid-template-columns: 1fr; }
-    nav { padding: 1rem 1.5rem; }
-    .nav-links { gap: 1rem; }
-  }
-</style>
-</head>
-<body>
-
-<!-- NAV -->
-<nav>
-  <div class="logo"><img src="logos/alchemist logo_colour.svg" alt="Alchemist" height="28" style="display:block;"></div>
-  <div class="nav-links">
-    <a href="#">Product</a>
-    <a href="#">Docs</a>
-    <a href="#">Pricing</a>
-    <a href="#" class="btn-nav">Get in Touch</a>
-  </div>
-</nav>
-
-<!-- HERO -->
-<section class="hero">
-  <div class="hero-badge">
-    <span class="dot"></span>
-    New: Agent-Native Integrations
-  </div>
-  <h1>Migrate SAS with<br><span class="accent">your coding agents</span></h1>
-  <p class="hero-sub">
-    Alchemist MCP and Skill let your team convert SAS to PySpark, Python, and more — directly from Databricks, Snowflake, Claude Code, or any coding agent.
-  </p>
-
-  <div class="video-wrapper">
-    <iframe
-      src="https://www.youtube.com/embed/IBZDeOhHPc8?rel=0&modestbranding=1"
-      title="Alchemist Agents Demo"
-      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-      allowfullscreen>
-    </iframe>
-  </div>
-</section>
-
-<!-- ANIMATED CODE DEMO -->
-<div class="code-demo">
-  <div style="text-align:center; margin-bottom: 3rem;">
-    <p class="section-label">See It In Action</p>
-    <h2>SAS in. PySpark out.</h2>
-  </div>
-  <div class="code-container">
-    <div class="code-block">
-      <div class="code-header">
-        <span class="lang">SAS</span> — input.sas
+      /* RESPONSIVE */
+      @media (max-width: 768px) {
+        .code-container {
+          grid-template-columns: 1fr;
+        }
+        .arrow-col {
+          transform: rotate(90deg);
+          padding: 1rem 0;
+        }
+        .problem-grid {
+          grid-template-columns: 1fr;
+        }
+        .compare-grid {
+          grid-template-columns: 1fr;
+        }
+        .deploy-grid {
+          grid-template-columns: 1fr;
+        }
+        nav {
+          padding: 1rem 1.5rem;
+        }
+        .nav-links {
+          gap: 1rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- NAV -->
+    <nav>
+      <div class="logo">
+        <img
+          src="logos/alchemist logo_colour.svg"
+          alt="Alchemist"
+          height="28"
+          style="display: block"
+        />
       </div>
-      <div class="code-body">
-        <span class="keyword">data</span> work.high_power_cars;<br>
-        &nbsp;&nbsp;<span class="keyword">set</span> sashelp.cars;<br>
-        &nbsp;&nbsp;<span class="keyword">where</span> horsepower <span class="operator">></span> <span class="string">300</span>;<br>
-        &nbsp;&nbsp;tax_category <span class="operator">=</span> <span class="string">'Premium'</span>;<br>
-        &nbsp;&nbsp;adjusted_msrp <span class="operator">=</span> msrp <span class="operator">*</span> <span class="string">1.05</span>;<br>
-        <span class="keyword">run</span>;
+      <div class="nav-links">
+        <a href="#">Product</a>
+        <a href="#">Docs</a>
+        <a href="#">Pricing</a>
+        <a href="#" class="btn-nav">Get in Touch</a>
       </div>
-    </div>
+    </nav>
 
-    <div class="arrow-col">
-      <div class="arrow-icon">&#8594;</div>
-    </div>
-
-    <div class="code-block">
-      <div class="code-header">
-        <span class="lang">PySpark</span> — output.py
+    <!-- HERO -->
+    <section class="hero">
+      <div class="hero-badge">
+        <span class="dot"></span>
+        New: Agent-Native Integrations
       </div>
-      <div class="code-body" id="pyspark-output">
-        <span class="comment"># Converted by Alchemist</span><br>
-        <span class="keyword">from</span> pyspark.sql <span class="keyword">import</span> functions <span class="keyword">as</span> F<br><br>
-        <span class="variable">df</span> <span class="operator">=</span> spark.table(<span class="string">"sashelp.cars"</span>)<br>
-        <span class="variable">df</span> <span class="operator">=</span> <span class="variable">df</span>.filter(F.col(<span class="string">"horsepower"</span>) <span class="operator">></span> <span class="string">300</span>)<br>
-        <span class="variable">df</span> <span class="operator">=</span> <span class="variable">df</span>.withColumn(<span class="string">"tax_category"</span>, F.lit(<span class="string">"Premium"</span>))<br>
-        <span class="variable">df</span> <span class="operator">=</span> <span class="variable">df</span>.withColumn(<span class="string">"adjusted_msrp"</span>, F.col(<span class="string">"msrp"</span>) <span class="operator">*</span> <span class="string">1.05</span>)<span class="typing-cursor"></span>
+      <h1>
+        Migrate from SAS with<br /><span class="accent"
+          >your coding agents</span
+        >
+      </h1>
+      <p class="hero-sub">
+        Alchemist MCP and Skills enable deterministic SAS-to-PySpark migration
+        you can trust. Proven at enterprise scale on Databricks and Snowflake.
+      </p>
+
+      <div class="video-wrapper">
+        <iframe
+          src="https://www.youtube.com/embed/IBZDeOhHPc8?rel=0&modestbranding=1"
+          title="Alchemist Agents Demo"
+          allow="
+            accelerometer;
+            autoplay;
+            clipboard-write;
+            encrypted-media;
+            gyroscope;
+            picture-in-picture;
+          "
+          allowfullscreen
+        >
+        </iframe>
       </div>
-    </div>
-  </div>
-</div>
+    </section>
 
-<!-- PROBLEM -->
-<section>
-  <p class="section-label">The Problem</p>
-  <h2>Manual migration doesn't scale</h2>
-  <p class="section-desc">
-    Organizations sitting on thousands of SAS programs face the same wall: too slow, too inconsistent, too dependent on specialized engineers.
-  </p>
-  <div class="problem-grid">
-    <div class="problem-card">
-      <div class="icon">&#9201;</div>
-      <h3>Time-consuming</h3>
-      <p>Manual SAS rewrites take months. Teams burn engineering cycles on repetitive translation work instead of building.</p>
-    </div>
-    <div class="problem-card">
-      <div class="icon">&#9888;</div>
-      <h3>Inconsistent</h3>
-      <p>Every developer translates differently. Logic drift and subtle bugs creep in across hundreds of converted programs.</p>
-    </div>
-    <div class="problem-card">
-      <div class="icon">&#128274;</div>
-      <h3>Engineer-dependent</h3>
-      <p>Business and analytics teams can't participate. They wait in queue while engineers handle conversions one by one.</p>
-    </div>
-  </div>
-</section>
-
-<!-- ARCHITECTURE -->
-<section>
-  <p class="section-label">How It Works</p>
-  <h2>Your agent talks to Alchemist</h2>
-  <p class="section-desc">
-    Ask your coding agent to convert SAS code. It delegates to Alchemist via MCP or Skill, and returns production-ready output.
-  </p>
-  <div class="arch-diagram">
-    <div class="arch-flow">
-      <div class="arch-node">
-        <div class="arch-box">
-          Your Agent
+    <!-- ANIMATED CODE DEMO -->
+    <div class="code-demo">
+      <div style="text-align: center; margin-bottom: 3rem">
+        <p class="section-label">See It In Action</p>
+        <h2>SAS in. PySpark out.</h2>
+      </div>
+      <div class="code-container">
+        <div class="code-block">
+          <div class="code-header">
+            <span class="lang">SAS</span> — input.sas
+          </div>
+          <div class="code-body">
+            <span class="keyword">data</span> work.high_power_cars;<br />
+            &nbsp;&nbsp;<span class="keyword">set</span> sashelp.cars;<br />
+            &nbsp;&nbsp;<span class="keyword">where</span> horsepower
+            <span class="operator">></span>
+            <span class="string">300</span>;<br />
+            &nbsp;&nbsp;tax_category <span class="operator">=</span>
+            <span class="string">'Premium'</span>;<br />
+            &nbsp;&nbsp;adjusted_msrp <span class="operator">=</span> msrp
+            <span class="operator">*</span>
+            <span class="string">1.05</span>;<br />
+            <span class="keyword">run</span>;
+          </div>
         </div>
-        <span class="arch-label">Databricks Genie Code<br>Snowflake Cortex Code<br>Claude Code &middot; Any Other</span>
-      </div>
 
-      <div class="arch-connector">
-        <span class="arch-connector-label">natural language request</span>
-        <div class="arch-connector-line">
-          <svg viewBox="0 0 160 24">
-            <line class="arch-dashed" x1="0" y1="12" x2="140" y2="12"/>
-            <polygon class="arch-arrowhead" points="140,6 152,12 140,18"/>
-          </svg>
+        <div class="arrow-col">
+          <div class="arrow-icon">&#8594;</div>
+        </div>
+
+        <div class="code-block">
+          <div class="code-header">
+            <span class="lang">PySpark</span> — output.py
+          </div>
+          <div class="code-body" id="pyspark-output">
+            <span class="comment"># Converted by Alchemist</span><br />
+            <span class="keyword">from</span> pyspark.sql
+            <span class="keyword">import</span> functions
+            <span class="keyword">as</span> F<br /><br />
+            <span class="variable">df</span>
+            <span class="operator">=</span> spark.table(<span class="string"
+              >"sashelp.cars"</span
+            >)<br />
+            <span class="variable">df</span> <span class="operator">=</span>
+            <span class="variable">df</span>.filter(F.col(<span class="string"
+              >"horsepower"</span
+            >) <span class="operator">></span>
+            <span class="string">300</span>)<br />
+            <span class="variable">df</span> <span class="operator">=</span>
+            <span class="variable">df</span>.withColumn(<span class="string"
+              >"tax_category"</span
+            >, F.lit(<span class="string">"Premium"</span>))<br />
+            <span class="variable">df</span> <span class="operator">=</span>
+            <span class="variable">df</span>.withColumn(<span class="string"
+              >"adjusted_msrp"</span
+            >, F.col(<span class="string">"msrp"</span>)
+            <span class="operator">*</span>
+            <span class="string">1.05</span>)<br />
+            <span class="variable">df</span> <span class="operator">=</span>
+            <span class="variable">df_high_power_cars</span
+            >.createOrReplaceTempView(<br />
+            <span class="string">"HIGH_POWER_CARS"</span>)<span
+              class="typing-cursor"
+            ></span>
+          </div>
         </div>
       </div>
+    </div>
 
-      <div class="arch-node">
-        <div class="arch-box green-border">
-          Alchemist
-          <span class="arch-box-sub">MCP / Skill</span>
+    <!-- PROBLEM -->
+    <section>
+      <p class="section-label">The Problem</p>
+      <h2>Manual migration doesn't scale</h2>
+      <p class="section-desc">
+        Organizations sitting on thousands of SAS programs face the same wall:
+        too slow, too inconsistent, too dependent on specialized engineers.
+      </p>
+      <div class="problem-grid">
+        <div class="problem-card">
+          <div class="icon">&#9201;</div>
+          <h3>Time-consuming</h3>
+          <p>
+            Manual SAS rewrites take months. Teams burn engineering cycles on
+            repetitive translation work instead of building.
+          </p>
         </div>
-        <span class="arch-label">api.getalchemist.io</span>
-      </div>
-
-      <div class="arch-connector">
-        <span class="arch-connector-label">converted code</span>
-        <div class="arch-connector-line">
-          <svg viewBox="0 0 160 24">
-            <line class="arch-dashed" x1="0" y1="12" x2="140" y2="12"/>
-            <polygon class="arch-arrowhead" points="140,6 152,12 140,18"/>
-          </svg>
+        <div class="problem-card">
+          <div class="icon">&#9888;</div>
+          <h3>Inconsistent</h3>
+          <p>
+            Every developer translates differently. Logic drift and subtle bugs
+            creep in across hundreds of converted programs.
+          </p>
+        </div>
+        <div class="problem-card">
+          <div class="icon">&#128274;</div>
+          <h3>Engineer-dependent</h3>
+          <p>
+            Business and analytics teams can't participate. They wait in queue
+            while engineers handle conversions one by one.
+          </p>
         </div>
       </div>
+    </section>
 
-      <div class="arch-node">
-        <div class="arch-box">
-          Your Notebook
+    <!-- ARCHITECTURE -->
+    <section style="text-align: center">
+      <p class="section-label">How It Works</p>
+      <h2>Your agent talks to Alchemist</h2>
+      <p class="section-desc" style="margin-left: auto; margin-right: auto">
+        Ask your coding agent to convert SAS code. It delegates to Alchemist via
+        MCP or Skill, and returns production-ready output.
+      </p>
+      <div class="arch-diagram">
+        <div class="arch-flow">
+          <div class="arch-node">
+            <div class="arch-box">Your Agent</div>
+            <span class="arch-label"
+              >Databricks Genie Code<br />Snowflake Cortex Code<br />Claude Code
+              &middot; Any Other</span
+            >
+          </div>
+
+          <div class="arch-connector">
+            <span class="arch-connector-label">natural language request</span>
+            <div class="arch-connector-line">
+              <svg viewBox="0 0 160 24">
+                <line class="arch-dashed" x1="0" y1="12" x2="140" y2="12" />
+                <polygon class="arch-arrowhead" points="140,6 152,12 140,18" />
+              </svg>
+            </div>
+          </div>
+
+          <div class="arch-node">
+            <div class="arch-box green-border">
+              Alchemist
+              <span class="arch-box-sub">MCP / Skill</span>
+            </div>
+            <span class="arch-label">api.getalchemist.io</span>
+          </div>
+
+          <div class="arch-connector">
+            <span class="arch-connector-label">converted code</span>
+            <div class="arch-connector-line">
+              <svg viewBox="0 0 160 24">
+                <line class="arch-dashed" x1="0" y1="12" x2="140" y2="12" />
+                <polygon class="arch-arrowhead" points="140,6 152,12 140,18" />
+              </svg>
+            </div>
+          </div>
+
+          <div class="arch-node">
+            <div class="arch-box">Your Notebook</div>
+            <span class="arch-label">Review, refine, execute</span>
+          </div>
         </div>
-        <span class="arch-label">Review, refine, execute</span>
       </div>
-    </div>
-  </div>
-</section>
+    </section>
 
-<!-- MCP vs SKILL -->
-<section>
-  <p class="section-label">Choose Your Integration</p>
-  <h2>MCP or Skill — pick your path</h2>
-  <p class="section-desc">
-    Two ways to connect Alchemist to your coding workflow. Both deliver the same conversion engine.
-  </p>
-  <div class="compare-grid">
-    <div class="compare-card">
-      <h3>Alchemist MCP</h3>
-      <div class="subtitle">Model Context Protocol</div>
-      <ul>
-        <li>Standardized protocol for agent-to-tool communication</li>
-        <li>Works with any MCP-compatible coding agent</li>
-        <li>Connect once, convert any SAS program</li>
-        <li>Cloud or air-gapped Docker deployment</li>
-      </ul>
-      <div class="use-case">
-        <strong>Best for:</strong> Teams using multiple agents or building custom workflows
+    <!-- AGENTS STRIP -->
+    <div class="agents-strip">
+      <p class="section-label">Works With Your Stack</p>
+      <h2>Bring your own agent</h2>
+      <div class="agents-logos">
+        <div class="agent-logo">
+          <div class="icon-circle">
+            <img
+              src="logos/databricks genie.png"
+              alt="Databricks Genie"
+              width="46"
+              height="46"
+              style="object-fit: contain"
+            />
+          </div>
+          <span>Databricks Genie</span>
+        </div>
+        <div class="agent-logo">
+          <div class="icon-circle">
+            <img
+              src="logos/snowflake cortex.png"
+              alt="Snowflake Cortex"
+              width="35"
+              height="35"
+              style="object-fit: contain"
+            />
+          </div>
+          <span>Snowflake Cortex</span>
+        </div>
+        <div class="agent-logo">
+          <div class="icon-circle">
+            <img
+              src="logos/claude-logo.svg"
+              alt="Claude Code"
+              width="26"
+              height="26"
+              style="object-fit: contain"
+            />
+          </div>
+          <span>Claude Code</span>
+        </div>
+        <div class="agent-logo">
+          <div class="icon-circle">
+            <svg
+              width="28"
+              height="28"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="var(--text-dim)"
+              stroke-width="1.5"
+            >
+              <rect x="4" y="4" width="16" height="16" rx="4" />
+              <circle cx="9" cy="10" r="1.5" />
+              <circle cx="15" cy="10" r="1.5" />
+              <path d="M9 15h6" />
+            </svg>
+          </div>
+          <span>Any Other</span>
+        </div>
       </div>
     </div>
-    <div class="compare-card">
-      <h3>Alchemist Skill</h3>
-      <div class="subtitle">Custom Agent Skill</div>
-      <ul>
-        <li>Native skill integration for specific platforms</li>
-        <li>Deep integration with agent capabilities</li>
-        <li>Platform-optimized conversion pipeline</li>
-        <li>Simplified setup for supported agents</li>
-      </ul>
-      <div class="use-case">
-        <strong>Best for:</strong> Teams committed to a single agent platform like Databricks
-      </div>
-    </div>
-  </div>
-</section>
 
-<!-- AGENTS STRIP -->
-<div class="agents-strip">
-  <p class="section-label">Works With Your Stack</p>
-  <h2>Bring your own agent</h2>
-  <div class="agents-logos">
-    <div class="agent-logo">
-      <div class="icon-circle">
-        <img src="logos/Databricks.png" alt="Databricks" width="46" height="46" style="object-fit:contain;">
+    <!-- DEPLOYMENT -->
+    <section>
+      <p class="section-label">Deployment</p>
+      <h2>Cloud or air-gapped — your call</h2>
+      <p class="section-desc">
+        Run conversions through Alchemist's cloud, or deploy the full stack in
+        your own network via Docker.
+      </p>
+      <div class="deploy-grid">
+        <div class="deploy-card">
+          <div class="deploy-icon">&#9729;</div>
+          <h3>Alchemist Cloud</h3>
+          <p>
+            Connect your agent to api.getalchemist.io over public internet. Zero
+            infrastructure to manage.
+          </p>
+          <code>api.getalchemist.io</code>
+        </div>
+        <div class="deploy-card">
+          <div class="deploy-icon">&#128274;</div>
+          <h3>Air-Gapped (Docker)</h3>
+          <p>
+            Deploy Alchemist in your private cloud network. Full control. No
+            data leaves your environment.
+          </p>
+          <code>docker load -i alchemist.tar</code>
+        </div>
       </div>
-      <span>Databricks</span>
-    </div>
-    <div class="agent-logo">
-      <div class="icon-circle">
-        <img src="logos/snowflake.png" alt="Snowflake" width="32" height="32" style="object-fit:contain;">
+    </section>
+
+    <!-- CTA -->
+    <section class="cta-section">
+      <h2>
+        Ready to <span class="accent">accelerate</span><br />your SAS migration?
+      </h2>
+      <p>
+        Talk to our team about setting up Alchemist MCP or Skill for your
+        organization.
+      </p>
+      <div>
+        <a href="#" class="btn-cta">Book a Demo &rarr;</a>
+        <a href="#" class="btn-cta-secondary">Contact Sales</a>
       </div>
-      <span>Snowflake</span>
-    </div>
-    <div class="agent-logo">
-      <div class="icon-circle">
-        <img src="logos/claude-logo.svg" alt="Claude Code" width="26" height="26" style="object-fit:contain;">
-      </div>
-      <span>Claude Code</span>
-    </div>
-    <div class="agent-logo">
-      <div class="icon-circle">
-        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--text-dim)" stroke-width="1.5"><rect x="4" y="4" width="16" height="16" rx="4"/><circle cx="9" cy="10" r="1.5"/><circle cx="15" cy="10" r="1.5"/><path d="M9 15h6"/></svg>
-      </div>
-      <span>Any Other</span>
-    </div>
-  </div>
-</div>
+    </section>
 
-<!-- DEPLOYMENT -->
-<section>
-  <p class="section-label">Deployment</p>
-  <h2>Cloud or air-gapped — your call</h2>
-  <p class="section-desc">
-    Run conversions through Alchemist's cloud, or deploy the full stack in your own network via Docker.
-  </p>
-  <div class="deploy-grid">
-    <div class="deploy-card">
-      <div class="deploy-icon">&#9729;</div>
-      <h3>Alchemist Cloud</h3>
-      <p>Connect your agent to api.getalchemist.io over public internet. Zero infrastructure to manage.</p>
-      <code>api.getalchemist.io</code>
-    </div>
-    <div class="deploy-card">
-      <div class="deploy-icon">&#128274;</div>
-      <h3>Air-Gapped (Docker)</h3>
-      <p>Deploy Alchemist in your private cloud network. Full control. No data leaves your environment.</p>
-      <code>docker pull alchemist/mcp:latest</code>
-    </div>
-  </div>
-</section>
-
-<!-- CTA -->
-<section class="cta-section">
-  <h2>Ready to <span class="accent">accelerate</span><br>your SAS migration?</h2>
-  <p>Talk to our team about setting up Alchemist MCP or Skill for your organization.</p>
-  <div>
-    <a href="#" class="btn-cta">Book a Demo &rarr;</a>
-    <a href="#" class="btn-cta-secondary">Contact Sales</a>
-  </div>
-</section>
-
-<!-- FOOTER -->
-<footer>
-  <span>Alchemist &mdash; Brought to you by T1A</span>
-  <span>getalchemist.io</span>
-</footer>
-
-</body>
+    <!-- FOOTER -->
+    <footer>
+      <span>Alchemist &mdash; Brought to you by T1A</span>
+      <span>getalchemist.io</span>
+    </footer>
+  </body>
 </html>
