@@ -1,0 +1,17 @@
+<!-- ============================================
+     WEBFLOW: Page Settings > Custom Code > Footer Code
+     (Before </body> tag)
+     ============================================ -->
+
+<script>
+  function alchOpenModal(e) {
+    e.preventDefault();
+    document.getElementById('alchSignupModal').classList.add('active');
+  }
+  function alchCloseModal() {
+    document.getElementById('alchSignupModal').classList.remove('active');
+  }
+  document.getElementById('alchSignupModal').addEventListener('click', function(e) {
+    if (e.target === this) alchCloseModal();
+  });
+</script>

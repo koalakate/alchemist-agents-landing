@@ -1,0 +1,277 @@
+<!-- ============================================
+     WEBFLOW: Add an Embed element on a blank page
+     Paste this entire block inside it.
+
+     NOTE: Replace image src URLs below with your
+     Webflow asset URLs after uploading the logos.
+     Current URLs point to GitHub Pages as fallback.
+     ============================================ -->
+
+<div class="alch-wrap">
+
+  <!-- NAV -->
+  <nav class="alch-nav">
+    <div class="alch-logo">
+      <img
+        src="https://koalakate.github.io/alchemist-agents-landing/logos/alchemist%20logo_colour.svg"
+        alt="Alchemist"
+        height="28"
+        style="display: block"
+      />
+    </div>
+    <a href="#" class="alch-btn-nav" onclick="alchOpenModal(event)">Get in Touch</a>
+  </nav>
+
+  <!-- HERO -->
+  <div class="alch-hero">
+    <div class="alch-hero-badge">
+      <span class="alch-dot"></span>
+      New: Agent-Native Integrations
+    </div>
+    <h1>
+      Migrate from SAS with<br /><span class="alch-accent">your coding agents</span>
+    </h1>
+    <p class="alch-hero-sub">
+      Alchemist MCP and Skills enable deterministic SAS-to-PySpark migration
+      you can trust. Proven at enterprise scale on Databricks and Snowflake.
+    </p>
+
+    <div class="alch-video-wrapper">
+      <iframe
+        src="https://www.youtube.com/embed/IBZDeOhHPc8?rel=0&modestbranding=1"
+        title="Alchemist Agents Demo"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture;"
+        allowfullscreen
+      ></iframe>
+    </div>
+  </div>
+
+  <!-- CODE DEMO -->
+  <div class="alch-code-demo">
+    <div style="text-align: center; margin-bottom: 3rem">
+      <p class="alch-section-label">See It In Action</p>
+      <h2>SAS in. PySpark out.</h2>
+    </div>
+    <div class="alch-code-container">
+      <div class="alch-code-block">
+        <div class="alch-code-header">
+          <span class="alch-lang">SAS</span> — input.sas
+        </div>
+        <div class="alch-code-body">
+          <span class="kw">data</span> work.high_power_cars;<br />
+          &nbsp;&nbsp;<span class="kw">set</span> sashelp.cars;<br />
+          &nbsp;&nbsp;<span class="kw">where</span> horsepower
+          <span class="op">&gt;</span>
+          <span class="str">300</span>;<br />
+          &nbsp;&nbsp;tax_category <span class="op">=</span>
+          <span class="str">'Premium'</span>;<br />
+          &nbsp;&nbsp;adjusted_msrp <span class="op">=</span> msrp
+          <span class="op">*</span>
+          <span class="str">1.05</span>;<br />
+          <span class="kw">run</span>;
+        </div>
+      </div>
+
+      <div class="alch-arrow-col">
+        <div class="alch-arrow-icon">&#8594;</div>
+      </div>
+
+      <div class="alch-code-block">
+        <div class="alch-code-header">
+          <span class="alch-lang">PySpark</span> — output.py
+        </div>
+        <div class="alch-code-body">
+          <span class="cmt"># Converted by Alchemist</span><br />
+          <span class="kw">from</span> pyspark.sql
+          <span class="kw">import</span> functions
+          <span class="kw">as</span> F<br /><br />
+          <span class="vr">df</span>
+          <span class="op">=</span> spark.table(<span class="str">"sashelp.cars"</span>)<br />
+          <span class="vr">df</span> <span class="op">=</span>
+          <span class="vr">df</span>.filter(F.col(<span class="str">"horsepower"</span>) <span class="op">&gt;</span>
+          <span class="str">300</span>)<br />
+          <span class="vr">df</span> <span class="op">=</span>
+          <span class="vr">df</span>.withColumn(<span class="str">"tax_category"</span>, F.lit(<span class="str">"Premium"</span>))<br />
+          <span class="vr">df</span> <span class="op">=</span>
+          <span class="vr">df</span>.withColumn(<span class="str">"adjusted_msrp"</span>, F.col(<span class="str">"msrp"</span>)
+          <span class="op">*</span>
+          <span class="str">1.05</span>)<br />
+          <span class="vr">df</span> <span class="op">=</span>
+          <span class="vr">df_high_power_cars</span>.createOrReplaceTempView(<br />
+          <span class="str">"HIGH_POWER_CARS"</span>)<span class="alch-typing-cursor"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PROBLEM -->
+  <div class="alch-section">
+    <p class="alch-section-label">The Problem</p>
+    <h2>Manual migration doesn't scale</h2>
+    <p class="alch-section-desc">
+      Organizations sitting on thousands of SAS programs face the same wall:
+      too slow, too inconsistent, too dependent on specialized engineers.
+    </p>
+    <div class="alch-problem-grid">
+      <div class="alch-problem-card">
+        <div class="alch-icon">&#9201;</div>
+        <h3>Time-consuming</h3>
+        <p>Manual SAS rewrites take months. Teams burn engineering cycles on repetitive translation work instead of building.</p>
+      </div>
+      <div class="alch-problem-card">
+        <div class="alch-icon">&#9888;</div>
+        <h3>Inconsistent</h3>
+        <p>Every developer translates differently. Logic drift and subtle bugs creep in across hundreds of converted programs.</p>
+      </div>
+      <div class="alch-problem-card">
+        <div class="alch-icon">&#128274;</div>
+        <h3>Engineer-dependent</h3>
+        <p>Business and analytics teams can't participate. They wait in queue while engineers handle conversions one by one.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ARCHITECTURE -->
+  <div class="alch-section" style="text-align: center">
+    <p class="alch-section-label">How It Works</p>
+    <h2>Your agent talks to Alchemist</h2>
+    <p class="alch-section-desc" style="margin-left: auto; margin-right: auto">
+      Ask your coding agent to convert SAS code. It delegates to Alchemist via
+      MCP or Skill, and returns production-ready output.
+    </p>
+    <div class="alch-arch-diagram">
+      <div class="alch-arch-flow">
+        <div class="alch-arch-node">
+          <div class="alch-arch-box">Your Agent</div>
+          <span class="alch-arch-label">Databricks Genie Code<br />Snowflake Cortex Code<br />Claude Code &middot; Any Other</span>
+        </div>
+        <div class="alch-arch-connector">
+          <span class="alch-arch-connector-label">natural language request</span>
+          <div class="alch-arch-connector-line">
+            <svg class="alch-arch-svg-h" viewBox="0 0 160 24">
+              <line class="alch-arch-dashed" x1="0" y1="12" x2="140" y2="12" />
+              <polygon class="alch-arch-arrowhead" points="140,6 152,12 140,18" />
+            </svg>
+            <svg class="alch-arch-svg-v" viewBox="0 0 24 60">
+              <line class="alch-arch-dashed" x1="12" y1="0" x2="12" y2="46" />
+              <polygon class="alch-arch-arrowhead" points="6,46 12,58 18,46" />
+            </svg>
+          </div>
+        </div>
+        <div class="alch-arch-node">
+          <div class="alch-arch-box alch-green-border">
+            Alchemist
+            <span class="alch-arch-box-sub">MCP / Skill</span>
+          </div>
+          <span class="alch-arch-label">api.getalchemist.io</span>
+        </div>
+        <div class="alch-arch-connector">
+          <span class="alch-arch-connector-label">converted code</span>
+          <div class="alch-arch-connector-line">
+            <svg class="alch-arch-svg-h" viewBox="0 0 160 24">
+              <line class="alch-arch-dashed" x1="0" y1="12" x2="140" y2="12" />
+              <polygon class="alch-arch-arrowhead" points="140,6 152,12 140,18" />
+            </svg>
+            <svg class="alch-arch-svg-v" viewBox="0 0 24 60">
+              <line class="alch-arch-dashed" x1="12" y1="0" x2="12" y2="46" />
+              <polygon class="alch-arch-arrowhead" points="6,46 12,58 18,46" />
+            </svg>
+          </div>
+        </div>
+        <div class="alch-arch-node">
+          <div class="alch-arch-box">Your Notebook</div>
+          <span class="alch-arch-label">Review, refine, execute</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- AGENTS STRIP -->
+  <div class="alch-agents-strip">
+    <p class="alch-section-label">Works With Your Stack</p>
+    <h2>Bring your own agent</h2>
+    <div class="alch-agents-logos">
+      <div class="alch-agent-logo">
+        <div class="alch-icon-circle">
+          <img src="https://koalakate.github.io/alchemist-agents-landing/logos/databricks%20genie.png" alt="Databricks Genie" width="40" height="40" style="object-fit: contain" />
+        </div>
+        <span>Databricks<br>Genie</span>
+      </div>
+      <div class="alch-agent-logo">
+        <div class="alch-icon-circle">
+          <img src="https://koalakate.github.io/alchemist-agents-landing/logos/snowflake%20cortex.png" alt="Snowflake Cortex" width="40" height="40" style="object-fit: contain" />
+        </div>
+        <span>Snowflake Cortex</span>
+      </div>
+      <div class="alch-agent-logo">
+        <div class="alch-icon-circle">
+          <img src="https://koalakate.github.io/alchemist-agents-landing/logos/claude-logo.svg" alt="Claude Code" width="32" height="32" style="object-fit: contain" />
+        </div>
+        <span>Claude<br>Code</span>
+      </div>
+      <div class="alch-agent-logo">
+        <div class="alch-icon-circle">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--text-dim)" stroke-width="1.5">
+            <rect x="4" y="4" width="16" height="16" rx="4" />
+            <circle cx="9" cy="10" r="1.5" />
+            <circle cx="15" cy="10" r="1.5" />
+            <path d="M9 15h6" />
+          </svg>
+        </div>
+        <span>Any<br>Other</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- DEPLOYMENT -->
+  <div class="alch-section">
+    <p class="alch-section-label">Deployment</p>
+    <h2>Cloud or air-gapped — your call</h2>
+    <p class="alch-section-desc">
+      Run conversions through Alchemist's cloud, or deploy the full stack in
+      your own network via Docker.
+    </p>
+    <div class="alch-deploy-grid">
+      <div class="alch-deploy-card">
+        <div class="alch-deploy-icon">&#9729;</div>
+        <h3>Alchemist Cloud</h3>
+        <p>Connect your agent to api.getalchemist.io over public internet. Zero infrastructure to manage.</p>
+        <code>api.getalchemist.io</code>
+      </div>
+      <div class="alch-deploy-card">
+        <div class="alch-deploy-icon">&#128274;</div>
+        <h3>Air-Gapped (Docker)</h3>
+        <p>Deploy Alchemist in your private cloud network. Full control. No data leaves your environment.</p>
+        <code>docker load -i alchemist.tar</code>
+      </div>
+    </div>
+  </div>
+
+  <!-- CTA -->
+  <div class="alch-cta-section">
+    <h2>
+      Ready to <span class="alch-accent">accelerate</span><br />your SAS migration?
+    </h2>
+    <p>
+      Talk to our team about setting up Alchemist MCP or Skill for your organization.
+    </p>
+    <div>
+      <a href="#" class="alch-btn-cta" onclick="alchOpenModal(event)">Book a Demo &rarr;</a>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="alch-footer">
+    <span>Alchemist &mdash; Brought to you by T1A</span>
+    <span>getalchemist.io</span>
+  </div>
+
+  <!-- SIGNUP MODAL -->
+  <div class="alch-modal-overlay" id="alchSignupModal">
+    <div class="alch-modal-content">
+      <button class="alch-modal-close" onclick="alchCloseModal()">&times;</button>
+      <iframe src="https://app.getalchemist.io/auth?mode=signup&embed=true" scrolling="no"></iframe>
+    </div>
+  </div>
+
+</div>
